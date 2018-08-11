@@ -116,6 +116,7 @@ export default function playState(game) {
                 if (lad.input.justPressed(0, 20)) {
                     gonnaClimb = lad;
                     playerState = "moveladder";
+                    maybeStartClimb(); // don't bother moving to a ladder if you're already there
                 }
             });
         };
@@ -128,16 +129,20 @@ export default function playState(game) {
             }
         };
 
-        const moveToTargetLadder = () => {
-            const direction = Math.sign(gonnaClimb.x - player.x);
-            player.x += direction * playerWalkSpeed;
-
+        const maybeStartClimb = () => {
             if (isIntersect(gonnaClimb, player)) {
                 playerLevelTarget = Math.abs(1 - playerLevel); // switch between 0 and 1
                 playerState = "climb";
                 amClimb = gonnaClimb;
                 gonnaClimb = null;
             }
+        }
+
+        const moveToTargetLadder = () => {
+            const direction = Math.sign(gonnaClimb.x - player.x);
+            player.x += direction * playerWalkSpeed;
+
+            maybeStartClimb();
         };
 
         const climb = () => {
