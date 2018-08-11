@@ -1,6 +1,3 @@
-import playState from './play-state';
-import aboutState from './about-state';
-
 export default function entryState(game) {
     return {
 
@@ -15,13 +12,11 @@ export default function entryState(game) {
 
             startOption.inputEnabled = true;
             startOption.events.onInputUp.add(function () {
-                game.state.add('Play', playState(game));
                 game.state.start('Play');
             });
 
             aboutOption.inputEnabled = true;
             aboutOption.events.onInputUp.add(function() {
-                game.state.add('About', aboutState(game));
                 game.state.start('About');
             });
         }

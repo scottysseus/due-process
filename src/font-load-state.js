@@ -1,11 +1,7 @@
-import entryState from './entry-state';
-
 export default function fontLoadState(game) {
 
     window.fontsLoaded = function() {
-        game.state.add('Entry', entryState(game));
         game.state.start('Entry');
-        
     }
 
     return {
