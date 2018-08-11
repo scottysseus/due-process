@@ -31,7 +31,7 @@ export default function playState(game) {
         game.load.spritesheet('usurper', img('usurper'), 64/2, 64);
         game.load.spritesheet('rebel', img('rebel'), 64/2, 64);
         game.load.spritesheet('goblin', img('goblin'), 64/2, 32);
-        game.load.spritesheet('ladder', img('ladder'), 96/2, 72);
+        game.load.image('ladder', img('ladderglow'));
         game.load.image('capturebox', img('capturebox'));
         game.load.spritesheet('torch', img('torch'), 8, 16);
         game.load.image('pointer', img('pointer'));
@@ -127,6 +127,7 @@ export default function playState(game) {
                 if (lad.input.justPressed(0, 20)) {
                     gonnaClimb = lad;
                     playerState = "moveladder";
+                    spawnGlowLadder(gonnaClimb);
                     maybeStartClimb(); // don't bother moving to a ladder if you're already there
                 }
             });
@@ -330,6 +331,27 @@ export default function playState(game) {
             if (pointer.alpha <= 0) {
                 pointer.destroy();
                 clearInterval(what);
+            }
+        }, 16);
+    }
+
+    function spawnGlowLadder(like) {
+        let ladder = game.add.sprite(like.x, like.y, 'ladder');
+
+        ladder.anchor.setTo(0.5, 1);
+        ladder.x += ladder.width/2;
+        ladder.y += ladder.height;
+        ladder.alpha = 0;
+
+
+        let t = 0;
+        const id = setInterval(() => {
+            t += Math.PI / 30;
+            ladder.alpha = Math.sin(t);
+            if (t >= Math.PI) {
+                ladder.alpha = 0;
+                ladder.destroy();
+                clearInterval(id);
             }
         }, 16);
     }
