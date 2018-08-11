@@ -6,8 +6,8 @@ export default function playState(game) {
     let playerLevelTarget = 0;
     const levelYs = [ 175, 330 ];
     const prisonerSpawnX = 200;
-    let ladderA;
-    let ladderB;
+    let ladderA, ladderB;
+    let spaceTop, spaceBottom;
     let gonnaClimb; // which ladder you're heading to climb
     let amClimb; // currently climbing
     let prisoners = []; // every prisoner, regardless of their `state`, lives here
@@ -24,6 +24,7 @@ export default function playState(game) {
         game.load.spritesheet('rebel', img('rebel'), 64/2, 64);
         game.load.spritesheet('goblin', img('goblin'), 64/2, 32);
         game.load.spritesheet('ladder', img('ladder'), 96/2, 72);
+        game.load.image('capturebox', img('capturebox'));
     }
 
     function create() {
@@ -31,20 +32,32 @@ export default function playState(game) {
 
         game.add.tileSprite(0, 0, 960, 540, 'bg');
 
+        // click-to-move areas
+        spaceTop = game.add.sprite(100, 20, 'capturebox');
+        spaceTop.alpha = 0.2;
+        spaceTop.width = 850;
+        spaceTop.height = 170;
+        spaceTop.inputEnabled = true;
+        spaceBottom = game.add.sprite(100, 200, 'capturebox');
+        spaceBottom.alpha = 0.2;
+        spaceBottom.width = 850;
+        spaceBottom.height = 170;
+        spaceBottom.inputEnabled = true;
+
+        // ladders
+        ladderA = game.add.sprite(327, 135, 'ladder');
+        ladderA.alpha = 0.0001; // invisible ladders
+        ladderA.inputEnabled = true;
+        ladderB = game.add.sprite(905, 135, 'ladder');
+        ladderB.inputEnabled = true;
+        ladderB.alpha = 0.0001;
+
         // the player
         player = game.add.sprite(0, 0, 'player');
         player.anchor.setTo(0.5, 1);
         player.x = 300;
         player.y = levelYs[0];
         player.inputEnabled = true;
-
-        // ladders
-        ladderA = game.add.sprite(330, 135, 'ladder');
-        // ladderA.height = 180;
-        ladderA.inputEnabled = true;
-        ladderB = game.add.sprite(900, 135, 'ladder');
-        ladderB.height = 180;
-        ladderB.inputEnabled = true;
 
         space = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         debug = game.input.keyboard.addKey(Phaser.Keyboard.D);
