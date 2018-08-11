@@ -64,11 +64,11 @@ export default function playState(game) {
 
         // ladders
         ladderA = game.add.sprite(327, 135, 'ladder');
-        ladderA.alpha = 0.0001; // invisible ladders
+        ladderA.alpha = 0.0; // invisible ladders
         ladderA.inputEnabled = true;
         ladderB = game.add.sprite(905, 135, 'ladder');
         ladderB.inputEnabled = true;
-        ladderB.alpha = 0.0001;
+        ladderB.alpha = 0.0;
 
         // torches
         torchHandler(game).placeTorches();
