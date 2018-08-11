@@ -60,7 +60,6 @@ export default function playState(game) {
         player.anchor.setTo(0.5, 1);
         player.x = 300;
         player.y = levelYs[0];
-        player.inputEnabled = true;
 
         space = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         debug = game.input.keyboard.addKey(Phaser.Keyboard.D);
