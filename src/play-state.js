@@ -144,6 +144,7 @@ export default function playState(game) {
                 (playerLevel === 1 && spaceBottom.input.justPressed(0, 20))) {
                 playerState = 'move';
                 playerTargetX = game.input.activePointer.x;
+                spawnPointer(playerTargetX, levelYs[playerLevel]);
             }
         };
 
@@ -314,6 +315,20 @@ export default function playState(game) {
         }
         return null;
     };
+
+    function spawnPointer(x, y) {
+        let pointer = game.add.sprite(x, y, 'pointer');
+        pointer.anchor.setTo(0.5, 1);
+        const what = setInterval(() => {
+            pointer.alpha -= 0.05;
+            pointer.width += 0.5;
+            pointer.height += 0.5;
+            if (pointer.alpha <= 0) {
+                pointer.destroy();
+                clearInterval(what);
+            }
+        }, 16);
+    }
 
     function render() {
         game.debug.pixel(player.x+0.5, player.y+0.5, "red");
