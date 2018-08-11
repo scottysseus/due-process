@@ -105,14 +105,13 @@ export default function playState(game) {
     }
 
     function render() {
-        game.debug.body(player);
-        game.debug.body(ladderA);
-        game.debug.body(ladderB);
+        // game.debug.body(player);
+        // game.debug.body(ladderA);
+        // game.debug.body(ladderB);
         game.debug.pixel(50, levelYs[0], "#f0f");
         game.debug.pixel(50, levelYs[1], "#f0f");
-        game.debug.pixel(player.x, player.y, "#f00");
-        game.debug.pixel(player.body.x, player.body.y, "#0f0");
-        game.debug.pixel(player.centerX, player.centerY, "#00f");
+        game.debug.pixel(player.x+0.5, player.y+0.5, "red");
+        game.debug.text(playerState, player.x - 64, player.y - 64, "rebeccapurple");
     }
 
     return {preload, create, update, render};
