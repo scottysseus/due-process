@@ -1,17 +1,20 @@
 export default function playState(game) {
-    let player;
-    let playerState = "stand"; // stand, climb, dead
+    const prisonerSpawnX = 200;
+    const playerWalkSpeed = 250/60;
+    const playerClimbSpeed = 200/60;
+    const races = [ 'elf', 'hobbit', 'usurper', 'rebel', 'goblin', 'ogre' ];
 
+    let player;
+    let playerState = "stand"; // stand, moveladder, climb, move, dead
     let playerLevel = 0; // 0=top floor, 1=next floor down
     let playerLevelTarget = 0;
+    let playerTargetX;
     const levelYs = [ 175, 330 ];
-    const prisonerSpawnX = 200;
     let ladderA, ladderB;
     let spaceTop, spaceBottom;
     let gonnaClimb; // which ladder you're heading to climb
     let amClimb; // currently climbing
     let prisoners = []; // every prisoner, regardless of their `state`, lives here
-    const races = [ 'elf', 'hobbit', 'usurper', 'rebel', 'goblin', 'ogre' ];
 
     function preload() {
         const img = (name) => `src/assets/${name}.png`;
@@ -84,9 +87,8 @@ export default function playState(game) {
             debugger;
         }
 
-        updatePrisoners();
-
         updatePlayer();
+        updatePrisoners();
 
         lastDebug = debug.isDown;
         lastSpace = space.isDown;
@@ -106,7 +108,7 @@ export default function playState(game) {
         };
 
         const checkClickOnLadder = () => {
-            [ladderA, ladderB].forEach((lad) => {
+            ([ladderA, ladderB]).forEach((lad) => {
                 // phaser doesn't support "did we click it this frame?"
                 // so instead of tracking that shit for every object
                 // we just make sure this click started no more than ~20ms ago
@@ -118,9 +120,17 @@ export default function playState(game) {
             });
         };
 
+        const checkClickOnSpace = () => {
+            if ((playerLevel === 0 && spaceTop.input.justPressed(0, 20)) ||
+                (playerLevel === 1 && spaceBottom.input.justPressed(0, 20))) {
+                playerState = 'move';
+                playerTargetX = game.input.activePointer.x;
+            }
+        };
+
         const moveToTargetLadder = () => {
             const direction = Math.sign(gonnaClimb.x - player.x);
-            player.x += direction * 250/60;
+            player.x += direction * playerWalkSpeed;
 
             if (isIntersect(gonnaClimb, player)) {
                 playerLevelTarget = Math.abs(1 - playerLevel); // switch between 0 and 1
@@ -130,33 +140,58 @@ export default function playState(game) {
             }
         };
 
+        const climb = () => {
+            const climbDir = Math.sign(playerLevelTarget - playerLevel);
+            player.y += climbDir * playerClimbSpeed;
+            player.x = amClimb.centerX;
+
+            // check if we just passed the level's Y coord
+            const currY = player.y;
+            const targetY = levelYs[playerLevelTarget];
+
+            if (climbDir === 1 && currY >= targetY ||  // down
+                climbDir === -1 && currY <= targetY ||
+                climbDir === 0) { // up
+                player.y = targetY;
+                playerLevel = playerLevelTarget;
+                playerState = "stand";
+                amClimb = null;
+            }
+        };
+
+        const moveToTargetSpace = () => {
+            const direction = Math.sign(playerTargetX - player.x);
+            player.x += direction * playerWalkSpeed;
+
+            if (Math.abs(player.x - playerTargetX) < playerWalkSpeed) {
+                playerState = "stand";
+                player.x = playerTargetX;
+                playerTargetX = undefined;
+            }
+        };
+
         ({
             stand: () => {
                 checkClickOnLadder();
+                checkClickOnSpace();
                 checkClickOnPrisoner();
             },
             moveladder: () => {
                 moveToTargetLadder();
+
                 checkClickOnLadder();
+                checkClickOnSpace();
+                checkClickOnPrisoner();
+            },
+            move: () => {
+                moveToTargetSpace();
+
+                checkClickOnLadder();
+                checkClickOnSpace();
                 checkClickOnPrisoner();
             },
             climb: () => {
-                const climbDir = Math.sign(playerLevelTarget - playerLevel);
-                player.y += climbDir * 200/60;
-                player.x = amClimb.centerX;
-
-                // check if we just passed the level's Y coord
-                const currY = player.y;
-                const targetY = levelYs[playerLevelTarget];
-
-                if (climbDir === 1 && currY >= targetY ||  // down
-                    climbDir === -1 && currY <= targetY ||
-                    climbDir === 0) { // up
-                    player.y = targetY;
-                    playerLevel = playerLevelTarget;
-                    playerState = "stand";
-                    amClimb = null;
-                }
+                climb();
             },
         })[playerState]();
     }
@@ -197,11 +232,11 @@ export default function playState(game) {
         return Phaser.Rectangle.intersects(a.getBounds(), b.getBounds());
     }
 
-    /** if `you` intersects with anything in the array,
-     * return the first thing in the `arrayOfThings` that is intersecting.
-     * else null.
-     */
     function intersectsAny(arrayOfThings, you) {
+        /** if `you` intersects with anything in the array,
+        * return the first thing in the `arrayOfThings` that is intersecting.
+        * else null.
+        */
         for (let thing of arrayOfThings) {
             if (thing === you) {
                 // can't collide with yourself
