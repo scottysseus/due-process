@@ -33,6 +33,8 @@ export default function playState(game) {
         game.load.spritesheet('ladder', img('ladder'), 96/2, 72);
         game.load.image('capturebox', img('capturebox'));
         game.load.spritesheet('torch', img('torch'), 8, 16);
+        game.load.image('pointer', img('pointer'));
+        game.load.image('choppingblock', img('choppingblock'));
     }
 
     function create() {
@@ -314,14 +316,6 @@ export default function playState(game) {
     };
 
     function render() {
-        // prisoners.forEach((p) => {
-        //     game.debug.body(p);
-        // });
-        // game.debug.body(player);
-        // game.debug.body(ladderA);
-        // game.debug.body(ladderB);
-        game.debug.pixel(50, levelYs[0], "#f0f");
-        game.debug.pixel(50, levelYs[1], "#f0f");
         game.debug.pixel(player.x+0.5, player.y+0.5, "red");
         game.debug.text(playerState, player.x - 64, player.y - 64, "white");
     }
