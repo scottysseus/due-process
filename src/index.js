@@ -26,7 +26,7 @@ function create() {
 
     //  The hero!
     player = game.add.sprite(0, 0, 'player');
-    player.anchor.setTo(0.5, 0.5);
+    player.anchor.setTo(0.5, 1);
     player.centerX = 300;
     player.centerY = levelYs[0];
     game.physics.enable(player, Phaser.Physics.ARCADE);
@@ -61,10 +61,11 @@ function update() {
         player.body.velocity.x = direction * 250;
 
         if (game.physics.arcade.intersects(gonnaClimb.body, player.body)) {
-            gonnaClimb = null;
             playerLevelTarget = Math.abs(1 - playerLevel); // switch between 0 and 1
             player.body.velocity.x = 0;
+            player.x = gonnaClimb.body.x;
             playerState = "climb";
+            gonnaClimb = null;
         }
     };
 
