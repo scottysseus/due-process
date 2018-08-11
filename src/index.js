@@ -1,52 +1,46 @@
-import createjs from 'createjs';
-import Player from './Player';
-import Level from './Level';
+const game = new Phaser.Game(960, 540, Phaser.AUTO, 'phaser-example', {
+    preload, create, update, render
+});
 
-class Game {
-    // gameState;
-    // loader;
-    // stage;
-    // level;
-    // player;
+function preload() {
+    const img = (name) => `src/assets/${name}.png`;
+    game.load.spritesheet('ogre', img('ogre'), 96/2, 72);
+    game.load.spritesheet('player', img('player'), 128/4, 64);
+    game.load.image('bg', img('bgtiled'));
+}
 
-    startup() {
-        this.gameState = {
-            testX: 50,
-            testY: 50
-        };
-        this.stage = new createjs.Stage("demoCanvas");
+let player;
+let cursors;
+let fireButton;
+let ladderA;
 
-        const manifest = [
-            { src: "bg.png", id: "bg" }
-        ];
+function create() {
+    game.physics.startSystem(Phaser.Physics.ARCADE);
 
-        this.loader = new createjs.LoadQueue(true);
-        console.log("loading");
-        this.loader.addEventListener("complete", () => {
-            console.log("loaded");
+    starfield = game.add.tileSprite(0, 0, 960, 540, 'bg');
 
-            this.level = new Level(this);
-            this.player = new Player(this);
+    //  The hero!
+    player = game.add.sprite(300, 200, 'player');
+    player.anchor.setTo(0.5, 0.5);
+    game.physics.enable(player, Phaser.Physics.ARCADE);
+    player.inputEnabled = true;
 
-            this.level.startup(this.loader.getResult("bg"));
-            this.player.startup();
+    ladder = game.add.sprite();
 
-            createjs.Ticker.timingMode = createjs.Ticker.RAF;
-            createjs.Ticker.addEventListener("tick", this.tick.bind(this));
-        });
-        this.loader.loadManifest(manifest, true, "../src/assets/")
-    }
+    //  And some controls to play the game with
+    // cursors = game.input.keyboard.createCursorKeys();
+    // fireButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+}
 
-    tick(event) {
-        const deltaS = event.delta / 1000;
-
-        // update everything game related here.
-        this.level.update(event);
-        this.player.update(event);
-
-        this.stage.update(event);
+function update() {
+    if (player.alive)
+    {
+        if (player.input.justPressed() && Phaser.Mouse.BACK_BUTTON) {
+            player.body.velocity.y -= 10;
+        }
     }
 }
 
-const g = new Game();
-g.startup();
+function render() {
+    // game.debug.body(player);
+}
