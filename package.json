@@ -7,7 +7,7 @@
   "author": "Scott Weidenkopf <sweidenkopf@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "start": "webpack"
+    "start": "webpack --mode=development --watch"
   },
   "dependencies": {
     "webpack": "^4.16.5"
