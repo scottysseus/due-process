@@ -111,10 +111,7 @@ export default function playState(game) {
     function updatePlayer() {
         const checkClickOnPrisoner = () => {
             prisoners.forEach((pris, idx) => {
-                if (pris.input.justPressed(0, 20)) {
-                    // pris.destroy();
-                    // prisoners.splice(idx, 1);
-                }
+                // ....
             });
         };
 
