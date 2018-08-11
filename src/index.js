@@ -83,15 +83,12 @@ function update() {
             checkClickOnLadder();
         },
         climb: () => {
-            // debugger;
             const climbDir = Math.sign(playerLevelTarget - playerLevel);
             player.body.velocity.y = climbDir * 200;
 
             // check if we just passed the level's Y coord
             const currY = player.body.y;
             const targetY = levelYs[playerLevelTarget];
-
-            console.log(currY);
 
             if (climbDir === 1 && currY >= targetY ||  // down
                 climbDir === -1 && currY <= targetY ||
@@ -109,4 +106,7 @@ function render() {
     game.debug.body(player);
     game.debug.body(ladderA);
     game.debug.body(ladderB);
+    game.debug.pixel(player.x, player.y, "#f00");
+    game.debug.pixel(player.body.x, player.body.y, "#0f0");
+    game.debug.pixel(player.centerX, player.centerY, "#00f");
 }
