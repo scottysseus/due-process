@@ -1,5 +1,5 @@
-import playState from './play-state'
+import entryState from './entry-state';
 
 const game = new Phaser.Game(960, 540, Phaser.AUTO, 'game', undefined, undefined, false);
-game.state.add('Play', playState(game));
-game.state.start('Play');
+game.state.add('Entry', entryState(game));
+game.state.start('Entry');
