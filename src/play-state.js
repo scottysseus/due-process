@@ -5,13 +5,13 @@ export default function playState(game) {
     const playerWalkSpeed = 250/60;
     const playerClimbSpeed = 200/60;
     const races = [ 'elf', 'hobbit', 'usurper', 'rebel', 'goblin', 'ogre' ];
+    const levelYs = [ 175, 330 ];
 
     let player;
     let playerState = "stand"; // stand, moveladder, climb, move, dead
     let playerLevel = 0; // 0=top floor, 1=next floor down
     let playerLevelTarget = 0;
     let playerTargetX;
-    const levelYs = [ 175, 330 ];
     let ladderA, ladderB;
     let spaceTop, spaceBottom, waitingRoomBox;
     let gonnaClimb; // which ladder you're heading to climb
@@ -19,6 +19,7 @@ export default function playState(game) {
     let prisoners = []; // every prisoner, regardless of their `state`, lives here
     let waitingPrisoners = [];
     let activePrisoner;
+    let choppingBlock;
 
     function preload() {
         const img = (name) => `src/assets/${name}.png`;
@@ -71,6 +72,10 @@ export default function playState(game) {
 
         // torches
         torchHandler(game).placeTorches();
+
+        // chopping block
+        choppingBlock = game.add.sprite(200, levelYs[1], 'choppingblock');
+        choppingBlock.anchor.setTo(0.5, 1);
 
         // the player
         player = game.add.sprite(0, 0, 'player');
