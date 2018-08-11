@@ -19,10 +19,11 @@ let playerState = "stand"; // stand, climb, dead
 
 let playerLevel = 0; // 0=top floor, 1=next floor down
 let playerLevelTarget = 0;
-const levelYs = [ 200, 325 ];
+const levelYs = [ 200+32, 325+32 ];
 let ladderA;
 let ladderB;
 let gonnaClimb; // which ladder you're heading to climb
+let amClimb; // currently climbing
 
 function create() {
     game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -32,8 +33,8 @@ function create() {
     //  The hero!
     player = game.add.sprite(0, 0, 'player');
     player.anchor.setTo(0.5, 1);
-    player.centerX = 300;
-    player.centerY = levelYs[0];
+    player.x = 300;
+    player.y = levelYs[0];
     game.physics.enable(player, Phaser.Physics.ARCADE);
     player.inputEnabled = true;
 
@@ -62,14 +63,14 @@ function update() {
     };
 
     const moveToTargetLadder = () => {
-        const direction = Math.sign(gonnaClimb.body.x - player.body.x);
+        const direction = Math.sign(gonnaClimb.body.x - player.x);
         player.body.velocity.x = direction * 250;
 
         if (game.physics.arcade.intersects(gonnaClimb.body, player.body)) {
             playerLevelTarget = Math.abs(1 - playerLevel); // switch between 0 and 1
             player.body.velocity.x = 0;
-            player.x = gonnaClimb.body.x;
             playerState = "climb";
+            amClimb = gonnaClimb;
             gonnaClimb = null;
         }
     };
@@ -85,18 +86,20 @@ function update() {
         climb: () => {
             const climbDir = Math.sign(playerLevelTarget - playerLevel);
             player.body.velocity.y = climbDir * 200;
+            player.x = amClimb.centerX;
 
             // check if we just passed the level's Y coord
-            const currY = player.body.y;
+            const currY = player.y;
             const targetY = levelYs[playerLevelTarget];
 
             if (climbDir === 1 && currY >= targetY ||  // down
                 climbDir === -1 && currY <= targetY ||
                 climbDir === 0) { // up
                 player.body.velocity.y = 0;
-                player.body.y = targetY;
+                player.y = targetY;
                 playerLevel = playerLevelTarget;
                 playerState = "stand";
+                amClimb = null;
             }
         },
     })[playerState]();
@@ -106,6 +109,8 @@ function render() {
     game.debug.body(player);
     game.debug.body(ladderA);
     game.debug.body(ladderB);
+    game.debug.pixel(50, levelYs[0], "#f0f");
+    game.debug.pixel(50, levelYs[1], "#f0f");
     game.debug.pixel(player.x, player.y, "#f00");
     game.debug.pixel(player.body.x, player.body.y, "#0f0");
     game.debug.pixel(player.centerX, player.centerY, "#00f");
