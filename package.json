@@ -1,0 +1,18 @@
+{
+  "name": "due-process",
+  "version": "1.0.0",
+  "description": "A game about justice, integrity, and of course, due process",
+  "main": "index.js",
+  "repository": "https://github.com/scottyseus/due-process.git",
+  "author": "Scott Weidenkopf <sweidenkopf@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "webpack"
+  },
+  "dependencies": {
+    "webpack": "^4.16.5"
+  },
+  "devDependencies": {
+    "webpack-cli": "^3.1.0"
+  }
+}
