@@ -1,3 +1,5 @@
+import torchHandler from './torch-handler';
+
 export default function playState(game) {
     const prisonerSpawnX = 200;
     const playerWalkSpeed = 250/60;
@@ -28,6 +30,7 @@ export default function playState(game) {
         game.load.spritesheet('goblin', img('goblin'), 64/2, 32);
         game.load.spritesheet('ladder', img('ladder'), 96/2, 72);
         game.load.image('capturebox', img('capturebox'));
+        game.load.spritesheet('torch', img('torch'), 8, 16);
     }
 
     function create() {
@@ -36,14 +39,14 @@ export default function playState(game) {
         game.add.tileSprite(0, 0, 960, 540, 'bg');
 
         // click-to-move areas
-        spaceTop = game.add.sprite(100, 20, 'capturebox');
-        spaceTop.alpha = 0.2;
-        spaceTop.width = 850;
+        spaceTop = game.add.sprite(145, 20, 'capturebox');
+        spaceTop.alpha = 0.1;
+        spaceTop.width = 810;
         spaceTop.height = 170;
         spaceTop.inputEnabled = true;
-        spaceBottom = game.add.sprite(100, 200, 'capturebox');
-        spaceBottom.alpha = 0.2;
-        spaceBottom.width = 850;
+        spaceBottom = game.add.sprite(145, 200, 'capturebox');
+        spaceBottom.alpha = 0.1;
+        spaceBottom.width = 810;
         spaceBottom.height = 170;
         spaceBottom.inputEnabled = true;
 
@@ -54,6 +57,9 @@ export default function playState(game) {
         ladderB = game.add.sprite(905, 135, 'ladder');
         ladderB.inputEnabled = true;
         ladderB.alpha = 0.0001;
+
+        // torches
+        torchHandler(game).placeTorches();
 
         // the player
         player = game.add.sprite(0, 0, 'player');
@@ -207,8 +213,9 @@ export default function playState(game) {
         }
 
         const moveForwardInLine = (prisoners, prisoner) => {
+            const amIBumpingIntoTheNextGuyInLineAndIfSoWhoIsIt = intersectsAny(prisoners, prisoner, (them) => them.x > prisoner.x);
             if (isIntersect(prisoner, ladderA) ||
-                intersectsAny(prisoners, prisoner)) {
+                amIBumpingIntoTheNextGuyInLineAndIfSoWhoIsIt) {
                 prisoner.state = 'waitingroom';
             } else {
                 prisoner.state = 'entering';
@@ -236,18 +243,23 @@ export default function playState(game) {
         return Phaser.Rectangle.intersects(a.getBounds(), b.getBounds());
     }
 
-    function intersectsAny(arrayOfThings, you) {
+    function intersectsAny(arrayOfThings, you, alsoSatisfy) {
         /** if `you` intersects with anything in the array,
         * return the first thing in the `arrayOfThings` that is intersecting.
         * else null.
         */
+       if (!alsoSatisfy) {
+           alsoSatisfy = (thing) => true;
+        }
         for (let thing of arrayOfThings) {
             if (thing === you) {
                 // can't collide with yourself
                 continue;
             }
             if (isIntersect(thing, you)) {
-                return thing;
+                if (alsoSatisfy(thing)) {
+                    return thing;
+                }
             }
         }
         return null;
@@ -263,7 +275,7 @@ export default function playState(game) {
         game.debug.pixel(50, levelYs[0], "#f0f");
         game.debug.pixel(50, levelYs[1], "#f0f");
         game.debug.pixel(player.x+0.5, player.y+0.5, "red");
-        game.debug.text(playerState, player.x - 64, player.y - 64, "rebeccapurple");
+        game.debug.text(playerState, player.x - 64, player.y - 64, "white");
     }
 
     return {preload, create, update, render};
