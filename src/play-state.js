@@ -11,6 +11,7 @@ export default function playState(game) {
     let gonnaClimb; // which ladder you're heading to climb
     let amClimb; // currently climbing
     let prisoners = []; // every prisoner, regardless of their `state`, lives here
+    const races = [ 'elf', 'hobbit', 'usurper', 'rebel', 'goblin', 'ogre' ];
 
     function preload() {
         const img = (name) => `src/assets/${name}.png`;
@@ -27,7 +28,6 @@ export default function playState(game) {
 
     function create() {
         game.physics.startSystem(Phaser.Physics.ARCADE);
-        // game.renderer.renderSession.roundPixels = true;
 
         game.add.tileSprite(0, 0, 960, 540, 'bg');
 
@@ -51,10 +51,11 @@ export default function playState(game) {
     }
 
     function newPrisoner() {
-        //TODO pick random race
-        let prisoner = game.add.sprite(prisonerSpawnX, levelYs[0], 'elf');
+        // pick random race
+        const race = races[Math.floor(Math.random() * races.length)];
+        let prisoner = game.add.sprite(prisonerSpawnX, levelYs[0], race);
         prisoners.push(prisoner);
-        prisoner.race = 'elf';
+        prisoner.race = race;
         prisoner.state = 'entering'; // entering, waitingroom
         prisoner.anchor.setTo(0.5, 1);
         prisoner.inputEnabled = true;
