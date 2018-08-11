@@ -15,7 +15,7 @@ A game about justice, integrity, and of course, due process
 
 The Kingdom of Fecea is asphyxiating from the nauseating fumes of crime, bankruptcy, and moral degeneracy.
 
-Brigands, highway robbers, and non-humans frustrate the attempts of the Kingdom's law enforcement at maintaining order.
+Brigands, highway robbers, and non-humans frustrate the attempts of the Kingdom's law enforcement to maintain order.
 
 ## Prisoner Types
 
