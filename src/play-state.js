@@ -83,18 +83,6 @@ export default function playState(game) {
         debug = game.input.keyboard.addKey(Phaser.Keyboard.D);
     }
 
-    function newPrisoner() {
-        // pick random race
-        const race = races[Math.floor(Math.random() * races.length)];
-        let prisoner = game.add.sprite(prisonerSpawnX, levelYs[0], race);
-        prisoners.push(prisoner);
-        waitingPrisoners.push(prisoner);
-        prisoner.race = race;
-        prisoner.state = 'entering'; // entering, waitingroom
-        prisoner.anchor.setTo(0.5, 1);
-        prisoner.inputEnabled = true;
-    }
-
     let debug;
     let lastDebug = false;
     let space;
@@ -260,7 +248,7 @@ export default function playState(game) {
     function updatePrisoners() {
         // if (Math.random() * 100 > 99) {
         if (space.isDown && !lastSpace) {
-            newPrisoner();
+            newPrisonerArrival();
         }
 
         const moveForwardInLine = (prisoners, prisoner) => {
@@ -289,6 +277,17 @@ export default function playState(game) {
     /***********************************************************************************************************
      * update helpers
      */
+    function newPrisonerArrival() {
+        // pick random race
+        const race = races[Math.floor(Math.random() * races.length)];
+        let prisoner = game.add.sprite(prisonerSpawnX, levelYs[0], race);
+        prisoners.push(prisoner);
+        waitingPrisoners.push(prisoner);
+        prisoner.race = race;
+        prisoner.state = 'entering'; // entering, waitingroom
+        prisoner.anchor.setTo(0.5, 1);
+        prisoner.inputEnabled = true;
+    }
 
     function isIntersect(a, b) {
         return Phaser.Rectangle.intersects(a.getBounds(), b.getBounds());
