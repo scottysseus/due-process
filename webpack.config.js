@@ -19,5 +19,6 @@ module.exports = {
                 'exports-loader?window.createjs'
             ]
         }]
-    }
+    },
+    devtool: "source-map"
 };
