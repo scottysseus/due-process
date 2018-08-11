@@ -1,31 +1,52 @@
 import createjs from 'createjs';
 import Player from './Player';
+import Level from './Level';
 
-const gameState = {
-    testX: 50,
-    testY: 50
-};
+class Game {
+    // gameState;
+    // loader;
+    // stage;
+    // level;
+    // player;
 
-const stage = new createjs.Stage("demoCanvas");
-const player = new Player(stage, gameState);
+    startup() {
+        this.gameState = {
+            testX: 50,
+            testY: 50
+        };
+        this.stage = new createjs.Stage("demoCanvas");
 
-function startup() {
-    // stage.addEventListener("stagemousedown", mouseDown);
-    createjs.Ticker.timingMode = createjs.Ticker.RAF;
-    createjs.Ticker.addEventListener("tick", tick);
+        const manifest = [
+            { src: "bg.png", id: "bg" }
+        ];
 
-    player.startup();
+        this.loader = new createjs.LoadQueue(true);
+        console.log("loading");
+        this.loader.addEventListener("complete", () => {
+            console.log("loaded");
 
-    stage.update();
+            this.level = new Level(this);
+            this.player = new Player(this);
+
+            this.level.startup(this.loader.getResult("bg"));
+            this.player.startup();
+
+            createjs.Ticker.timingMode = createjs.Ticker.RAF;
+            createjs.Ticker.addEventListener("tick", this.tick.bind(this));
+        });
+        this.loader.loadManifest(manifest, true, "../src/assets/")
+    }
+
+    tick(event) {
+        const deltaS = event.delta / 1000;
+
+        // update everything game related here.
+        this.level.update(event);
+        this.player.update(event);
+
+        this.stage.update(event);
+    }
 }
 
-function tick(event) {
-    const deltaS = event.delta / 1000;
-
-    // update everything game related here.
-    player.update(event);
-
-	stage.update(event);
-}
-
-startup();
+const g = new Game();
+g.startup();

@@ -1,18 +1,17 @@
 import createjs from 'createjs';
 
 class Player {
-    constructor(stage, gameState) {
-        this.stage = stage;
-        this.gameState = gameState;
+    constructor(game) {
+        this.game = game;
     }
 
     startup() {
         let circle = new createjs.Shape();
         circle.graphics.beginFill("red").drawCircle(0, 0, 40);
-        circle.x = this.gameState.testX;
-        circle.y = this.gameState.testY;
+        circle.x = this.game.gameState.testX;
+        circle.y = this.game.gameState.testY;
         circle.addEventListener("click", this.click);
-        this.stage.addChild(circle);
+        this.game.stage.addChild(circle);
     }
 
     update() {
@@ -20,7 +19,6 @@ class Player {
     }
 
     click(event) {
-        console.log(event);
     }
 }
 
