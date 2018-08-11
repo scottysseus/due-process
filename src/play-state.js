@@ -147,17 +147,15 @@ export default function playState(game) {
             maybeAttendPrisoner();
         };
 
-        const attendPrisoner = () => {
-            activePrisoner = waitingPrisoners.pop();
-        };
-
-        const checkPrisonerDestinationSelected = () => {
-
-        };
-
         const maybeAttendPrisoner = () => {
-            if(isIntersect(waitingRoomBox, player)) {
-                playerState = 'attendPrisoner';
+            if(playerState === 'moveWaitingRoom' && isIntersect(waitingRoomBox, player)
+                && !activePrisoner) {
+                if(waitingPrisoners.length > 0) {
+                    activePrisoner = waitingPrisoners.pop();
+                    activePrisoner.state = 'followingPlayer';
+                } else {
+                    playerState = 'stand';
+                }
             }
         };
 
@@ -173,6 +171,10 @@ export default function playState(game) {
         const moveToTargetLadder = () => {
             const direction = Math.sign(gonnaClimb.x - player.x);
             player.x += direction * playerWalkSpeed;
+            if(activePrisoner) {
+                activePrisoner.x = player.x + direction * 48 * -1;
+                activePrisoner.y = player.y;
+            }
 
             maybeStartClimb();
         };
@@ -181,6 +183,10 @@ export default function playState(game) {
             const climbDir = Math.sign(playerLevelTarget - playerLevel);
             player.y += climbDir * playerClimbSpeed;
             player.x = amClimb.centerX;
+            if(activePrisoner) {
+                activePrisoner.x = player.x;
+                activePrisoner.y = player.y + climbDir * -72;
+            }
 
             // check if we just passed the level's Y coord
             const currY = player.y;
@@ -199,11 +205,29 @@ export default function playState(game) {
         const moveToTargetSpace = () => {
             const direction = Math.sign(playerTargetX - player.x);
             player.x += direction * playerWalkSpeed;
+            if(activePrisoner) {
+                activePrisoner.x = player.x + direction * 48 * -1;
+                activePrisoner.y = player.y;
+            }
 
             if (Math.abs(player.x - playerTargetX) < playerWalkSpeed) {
                 playerState = "stand";
                 player.x = playerTargetX;
                 playerTargetX = undefined;
+            }
+        };
+
+        const turnOnAnimations = () => {
+            player.animations.play('walk', 8, true);
+            if(activePrisoner) {
+                activePrisoner.animations.play('walk', 8, true);
+            }
+        };
+
+        const turnOffAnimations = () => {
+            player.animations.stop('walk', true);
+            if(activePrisoner) {
+                activePrisoner.animations.stop('walk', true);
             }
         };
 
@@ -216,34 +240,28 @@ export default function playState(game) {
 
         ({
             stand: () => {
-                player.animations.stop('walk', true);
+                turnOffAnimations();
                 checkClicks();
             },
             moveladder: () => {
-                player.animations.play('walk', 8, true);
+                turnOnAnimations();
                 moveToTargetLadder();
                 checkClicks();
             },
             move: () => {
-                player.animations.play('walk', 8, true);
+                turnOnAnimations();
                 moveToTargetSpace();
                 checkClicks();
             },
             climb: () => {
-                player.animations.play('walk', 8, true);
+                turnOnAnimations();
                 climb();
             },
             moveWaitingRoom: () => {
                 maybeAttendPrisoner();
-                player.animations.play('walk', 8, true);
+                turnOnAnimations();
                 moveToTargetSpace();
                 checkClicks();
-            },
-            attendPrisoner: () => {
-                player.animations.stop('walk', true);
-            },
-            movePrisoner: () => {
-
             }
         })[playerState]();
     }
@@ -268,10 +286,13 @@ export default function playState(game) {
         prisoners.forEach((prisoner, idx) => {
             ({
                 entering: () => {
-                    moveForwardInLine(prisoners, prisoner);
+                    moveForwardInLine(waitingPrisoners, prisoner);
                 },
                 waitingroom: () => {
-                    moveForwardInLine(prisoners, prisoner);
+                    moveForwardInLine(waitingPrisoners, prisoner);
+                },
+                followingPlayer: () => {
+
                 }
             })[prisoner.state]();
         });
@@ -284,12 +305,12 @@ export default function playState(game) {
         // pick random race
         const race = races[Math.floor(Math.random() * races.length)];
         let prisoner = game.add.sprite(prisonerSpawnX, levelYs[0], race);
+        prisoner.animations.add('walk');
         prisoners.push(prisoner);
         waitingPrisoners.push(prisoner);
         prisoner.race = race;
         prisoner.state = 'entering'; // entering, waitingroom
         prisoner.anchor.setTo(0.5, 1);
-        prisoner.inputEnabled = true;
     }
 
     function isIntersect(a, b) {
