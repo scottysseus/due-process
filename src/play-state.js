@@ -13,10 +13,12 @@ export default function playState(game) {
     let playerTargetX;
     const levelYs = [ 175, 330 ];
     let ladderA, ladderB;
-    let spaceTop, spaceBottom;
+    let spaceTop, spaceBottom, waitingRoomBox;
     let gonnaClimb; // which ladder you're heading to climb
     let amClimb; // currently climbing
     let prisoners = []; // every prisoner, regardless of their `state`, lives here
+    let waitingPrisoners = [];
+    let activePrisoner;
 
     function preload() {
         const img = (name) => `src/assets/${name}.png`;
@@ -39,7 +41,7 @@ export default function playState(game) {
         game.add.tileSprite(0, 0, 960, 540, 'bg');
 
         // click-to-move areas
-        spaceTop = game.add.sprite(145, 20, 'capturebox');
+        spaceTop = game.add.sprite(325, 20, 'capturebox');
         spaceTop.alpha = 0.1;
         spaceTop.width = 810;
         spaceTop.height = 170;
@@ -49,6 +51,13 @@ export default function playState(game) {
         spaceBottom.width = 810;
         spaceBottom.height = 170;
         spaceBottom.inputEnabled = true;
+
+        // waiting area
+        waitingRoomBox = game.add.sprite(145, 20, 'capturebox');
+        waitingRoomBox.alpha = 0.1;
+        waitingRoomBox.width = 180;
+        waitingRoomBox.height = 170;
+        waitingRoomBox.inputEnabled = true;
 
         // ladders
         ladderA = game.add.sprite(327, 135, 'ladder');
@@ -65,7 +74,7 @@ export default function playState(game) {
         player = game.add.sprite(0, 0, 'player');
         player.animations.add('walk');
         player.anchor.setTo(0.5, 1);
-        player.x = 300;
+        player.x = 400;
         player.y = levelYs[0];
 
         space = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
@@ -77,6 +86,7 @@ export default function playState(game) {
         const race = races[Math.floor(Math.random() * races.length)];
         let prisoner = game.add.sprite(prisonerSpawnX, levelYs[0], race);
         prisoners.push(prisoner);
+        waitingPrisoners.push(prisoner);
         prisoner.race = race;
         prisoner.state = 'entering'; // entering, waitingroom
         prisoner.anchor.setTo(0.5, 1);
@@ -107,8 +117,8 @@ export default function playState(game) {
         const checkClickOnPrisoner = () => {
             prisoners.forEach((pris, idx) => {
                 if (pris.input.justPressed(0, 20)) {
-                    pris.destroy();
-                    prisoners.splice(idx, 1);
+                    // pris.destroy();
+                    // prisoners.splice(idx, 1);
                 }
             });
         };
@@ -132,6 +142,28 @@ export default function playState(game) {
                 (playerLevel === 1 && spaceBottom.input.justPressed(0, 20))) {
                 playerState = 'move';
                 playerTargetX = game.input.activePointer.x;
+            }
+        };
+
+        const checkClickOnWaitingRoom = () => {
+            if(waitingRoomBox.input.justPressed(0,20)) {
+                playerTargetX = 330;
+                playerState = 'moveWaitingRoom';
+            }
+            maybeAttendPrisoner();
+        };
+
+        const attendPrisoner = () => {
+            activePrisoner = waitingPrisoners.pop();
+        };
+
+        const checkPrisonerDestinationSelected = () => {
+
+        };
+
+        const maybeAttendPrisoner = () => {
+            if(isIntersect(waitingRoomBox, player)) {
+                playerState = 'attendPrisoner';
             }
         };
 
@@ -181,32 +213,44 @@ export default function playState(game) {
             }
         };
 
+        const checkClicks = function() {
+            checkClickOnLadder();
+            checkClickOnSpace();
+            checkClickOnPrisoner();
+            checkClickOnWaitingRoom();
+        };
+
         ({
             stand: () => {
-                checkClickOnLadder();
-                checkClickOnSpace();
-                checkClickOnPrisoner();
+                player.animations.stop('walk', true);
+                checkClicks();
             },
             moveladder: () => {
                 player.animations.play('walk', 8, true);
                 moveToTargetLadder();
-
-                checkClickOnLadder();
-                checkClickOnSpace();
-                checkClickOnPrisoner();
+                checkClicks();
             },
             move: () => {
                 player.animations.play('walk', 8, true);
                 moveToTargetSpace();
-
-                checkClickOnLadder();
-                checkClickOnSpace();
-                checkClickOnPrisoner();
+                checkClicks();
             },
             climb: () => {
                 player.animations.play('walk', 8, true);
                 climb();
             },
+            moveWaitingRoom: () => {
+                maybeAttendPrisoner();
+                player.animations.play('walk', 8, true);
+                moveToTargetSpace();
+                checkClicks();
+            },
+            attendPrisoner: () => {
+                player.animations.stop('walk', true);
+            },
+            movePrisoner: () => {
+
+            }
         })[playerState]();
     }
 
