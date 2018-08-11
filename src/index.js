@@ -5,8 +5,13 @@ const game = new Phaser.Game(960, 540, Phaser.AUTO, 'phaser-example', {
 function preload() {
     const img = (name) => `src/assets/${name}.png`;
     game.load.spritesheet('ogre', img('ogre'), 96/2, 72);
-    game.load.spritesheet('player', img('player'), 128/4, 64);
-    game.load.image('bg', img('bgtiled'));
+    game.load.spritesheet('player', img('player'), 64/2, 64);
+    game.load.image('bg', img('bg'));
+    game.load.spritesheet('elf', img('elf'), 64/2, 64);
+    game.load.spritesheet('hobbit', img('hobbit'), 64/2, 32);
+    game.load.spritesheet('usurper', img('usurper'), 64/2, 64);
+    game.load.spritesheet('rebel', img('rebel'), 64/2, 64);
+    game.load.spritesheet('goblin', img('goblin'), 64/2, 32);
 }
 
 let player;
