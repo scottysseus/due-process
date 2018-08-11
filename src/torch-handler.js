@@ -1,7 +1,7 @@
 export default function torchHandler(game) {
 
     let torchX = [225, 548, 718, 548, 718];
-    let torchY = [131, 131, 131, 291, 291];
+    let torchY = [111, 111, 111, 271, 271];
 
     return {
         placeTorches: function() {
