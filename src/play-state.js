@@ -83,56 +83,19 @@ export default function playState(game) {
         if (debug.isDown && !lastDebug) {
             debugger;
         }
-        // if (Math.random() * 100 > 99) {
-        if (space.isDown && !lastSpace) {
-            newPrisoner();
-        }
 
-        const isIntersect = (a, b) => {
-            return Phaser.Rectangle.intersects(a.getBounds(), b.getBounds());
-        }
+        updatePrisoners();
 
-        /** if `you` intersects with anything in the array,
-         * return the first thing in the `arrayOfThings` that is intersecting.
-         * else null.
-         */
-        const intersectsAny = (arrayOfThings, you) => {
-            for (let thing of arrayOfThings) {
-                if (thing === you) {
-                    // can't collide with yourself
-                    continue;
-                }
-                if (Math.abs(thing.x - you.x) < 20) {
-                    // debugger;
-                }
-                if (isIntersect(thing, you)) {
-                    return thing;
-                }
-            }
-            return null;
-        };
+        updatePlayer();
 
-        const moveForwardInLine = (prisoners, prisoner) => {
-            if (isIntersect(prisoner, ladderA) ||
-                intersectsAny(prisoners, prisoner)) {
-                prisoner.state = 'waitingroom';
-            } else {
-                prisoner.state = 'entering';
-                prisoner.x += 200/60;
-            }
-        }
+        lastDebug = debug.isDown;
+        lastSpace = space.isDown;
+    }
 
-        prisoners.forEach((prisoner, idx) => {
-            ({
-                entering: () => {
-                    moveForwardInLine(prisoners, prisoner);
-                },
-                waitingroom: () => {
-                    moveForwardInLine(prisoners, prisoner);
-                }
-            })[prisoner.state]();
-        });
-
+    /***********************************************************************************************************
+     * object class updates
+     */
+    function updatePlayer() {
         const checkClickOnPrisoner = () => {
             prisoners.forEach((pris, idx) => {
                 if (pris.input.justPressed(0, 20)) {
@@ -141,7 +104,6 @@ export default function playState(game) {
                 }
             });
         };
-
 
         const checkClickOnLadder = () => {
             [ladderA, ladderB].forEach((lad) => {
@@ -197,9 +159,60 @@ export default function playState(game) {
                 }
             },
         })[playerState]();
-
-        lastSpace = space.isDown;
     }
+
+    function updatePrisoners() {
+        // if (Math.random() * 100 > 99) {
+        if (space.isDown && !lastSpace) {
+            newPrisoner();
+        }
+
+        const moveForwardInLine = (prisoners, prisoner) => {
+            if (isIntersect(prisoner, ladderA) ||
+                intersectsAny(prisoners, prisoner)) {
+                prisoner.state = 'waitingroom';
+            } else {
+                prisoner.state = 'entering';
+                prisoner.x += 200/60;
+            }
+        }
+
+        prisoners.forEach((prisoner, idx) => {
+            ({
+                entering: () => {
+                    moveForwardInLine(prisoners, prisoner);
+                },
+                waitingroom: () => {
+                    moveForwardInLine(prisoners, prisoner);
+                }
+            })[prisoner.state]();
+        });
+    }
+
+    /***********************************************************************************************************
+     * update helpers
+     */
+
+    function isIntersect(a, b) {
+        return Phaser.Rectangle.intersects(a.getBounds(), b.getBounds());
+    }
+
+    /** if `you` intersects with anything in the array,
+     * return the first thing in the `arrayOfThings` that is intersecting.
+     * else null.
+     */
+    function intersectsAny(arrayOfThings, you) {
+        for (let thing of arrayOfThings) {
+            if (thing === you) {
+                // can't collide with yourself
+                continue;
+            }
+            if (isIntersect(thing, you)) {
+                return thing;
+            }
+        }
+        return null;
+    };
 
     function render() {
         // prisoners.forEach((p) => {
