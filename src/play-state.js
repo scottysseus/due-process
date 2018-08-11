@@ -63,6 +63,7 @@ export default function playState(game) {
 
         // the player
         player = game.add.sprite(0, 0, 'player');
+        player.animations.add('walk');
         player.anchor.setTo(0.5, 1);
         player.x = 300;
         player.y = levelYs[0];
@@ -187,6 +188,7 @@ export default function playState(game) {
                 checkClickOnPrisoner();
             },
             moveladder: () => {
+                player.animations.play('walk', 8, true);
                 moveToTargetLadder();
 
                 checkClickOnLadder();
@@ -194,6 +196,7 @@ export default function playState(game) {
                 checkClickOnPrisoner();
             },
             move: () => {
+                player.animations.play('walk', 8, true);
                 moveToTargetSpace();
 
                 checkClickOnLadder();
@@ -201,6 +204,7 @@ export default function playState(game) {
                 checkClickOnPrisoner();
             },
             climb: () => {
+                player.animations.play('walk', 8, true);
                 climb();
             },
         })[playerState]();
