@@ -25,6 +25,7 @@ export default function playState(game) {
     let cells = [];
     let clickedCell;
     let cellContents = [[],[],[],[],[],[]];
+    let score, scoreText;
 
     function preload() {
         const img = (name) => `src/assets/${name}.png`;
@@ -102,6 +103,10 @@ export default function playState(game) {
         player.anchor.setTo(0.5, 1);
         player.x = 400;
         player.y = levelYs[0];
+
+        // score
+        let scoreStyle = { font: '15pt Press Start 2P', fill: 'white', align: 'left' };
+        scoreText = game.add.text(650, 15, 'Score: 000000', scoreStyle);
 
         space = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         debug = game.input.keyboard.addKey(Phaser.Keyboard.D);
