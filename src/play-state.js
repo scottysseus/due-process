@@ -10,9 +10,12 @@ export default function playState(game) {
 
     // 'race': [things it hates]
     const raceRelationsMap = {
-        'elf': 'goblin',
-        'ogre': 'hobbit',
-        'rebel': 'usurper'
+        'goblin': 'elf', // goblins hate elves, a hatred as old as the two races
+        'elf': 'rebel', // elves are nobler than rebels, causing the rebels to instigate a fight they can't win
+        'rebel': 'usurper', // rebels hate bourgeois usurpers; class struggle is real
+        'usurper': 'ogre', // usurpers dominate ogres; their commanding presence whittles away at the ogre
+        'ogre': 'hobbit', // ogres eat hobbits, and they are hungry
+        'hobbit': 'goblin', // hobbits outsmart goblins
     };
 
     let player;
@@ -36,6 +39,9 @@ export default function playState(game) {
     let scoreText;
     let axe;
     let axeMurderTimer = 0;
+    let lives = 8;
+    let choppingblockGlow, ladderGlow, cellGlow, prisonerGlow;
+    let heartSprites = [];
 
     function preload() {
         const img = (name) => `src/assets/${name}.png`;
@@ -56,6 +62,9 @@ export default function playState(game) {
         game.load.spritesheet('glowbars', img('glowbars'), 426/3, 100);
         game.load.image('glow', img('glow'));
         game.load.image('axe', img('axe'));
+        game.load.image('heart', img('heart'));
+        game.load.image('choppingblockglow', img('choppingblockglow'));
+        game.load.spritesheet('axegrind', img('axegrind'), 112/2, 48);
     }
 
     function create() {
@@ -110,6 +119,18 @@ export default function playState(game) {
         choppingBlock.anchor.setTo(0.5, 0.7);
         choppingBlock.inputEnabled = true;
 
+        // glows
+        ladderGlow = game.add.sprite(0,0,'ladder');
+        ladderGlow.alpha = 0;
+        cellGlow = game.add.sprite(0,0,'glowbars');
+        cellGlow.alpha = 0;
+        prisonerGlow = game.add.sprite(0,0,'glow');
+        prisonerGlow.alpha = 0;
+        choppingblockGlow = game.add.sprite(0,0,'choppingblockglow');
+        choppingblockGlow.alpha = 0;
+        choppingblockGlow.anchor.setTo(0.5, 0.7);
+
+
         // the player
         player = game.add.sprite(0, 0, 'player');
         player.animations.add('walk');
@@ -120,6 +141,14 @@ export default function playState(game) {
         // score
         let scoreStyle = { font: '15pt Press Start 2P', fill: 'white', align: 'left' };
         scoreText = game.add.text(650, 15, 'Score: 000000', scoreStyle);
+
+        // health
+        let heartX = 256;
+        let heartY = 15;
+        for(var i = 0; i < lives; ++i) {
+            heartX += 30;
+            heartSprites.push(game.add.sprite(heartX, heartY, 'heart'));
+        }
 
         space = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         debug = game.input.keyboard.addKey(Phaser.Keyboard.D);
@@ -166,7 +195,7 @@ export default function playState(game) {
                 if (lad.input.justPressed(0, 20)) {
                     gonnaClimb = lad;
                     playerState = "moveladder";
-                    spawnGlowLadder(gonnaClimb);
+                    spawnGlow(gonnaClimb.x, gonnaClimb.y, ladderGlow);
                     maybeStartClimb(); // don't bother moving to a ladder if you're already there
                 }
             });
@@ -196,7 +225,7 @@ export default function playState(game) {
                     clickedCell = i;
                     playerTargetX = b.x + cellWidth/2;
                     playerState = "moveToCell";
-                    spawnGlowBars(b);
+                    spawnGlow(b.x, b.y, cellGlow);
                 }
             }
         };
@@ -205,7 +234,7 @@ export default function playState(game) {
             if (playerLevel === 1 && choppingBlock.input.justPressed(0, 20)) {
                 playerState = 'moveToBlock';
                 playerTargetX = choppingBlock.x;
-                spawnGlow(choppingBlock.x, choppingBlock.y, 'ladder');
+                spawnGlow(choppingBlock.x, choppingBlock.y, choppingblockGlow);
             }
         };
 
@@ -461,7 +490,7 @@ export default function playState(game) {
                 if(!activePrisoner) {
                     playerState = 'moveToPrisoner';
                     clickedPrisoner = prisoner;
-                    spawnGlow(prisoner.x - 16, prisoner.y + 3, 'glow');
+                    spawnGlow(prisoner.x - 22, prisoner.y, prisonerGlow);
                 }
             }
             let cell = cellContents[prisoner.cellIndex];
@@ -489,9 +518,29 @@ export default function playState(game) {
                 prisoner.anger = 0;
             }
 
-            if(prisoner.camaraderie > 300) {
+            if(prisoner.camaraderie > 480) {
                 prisoner.state = 'escape';
                 prisoner.camaraderie = 0;
+            }
+        };
+
+        const escape = function(prisoner) {
+            if (prisoner.y > 200 && isIntersect(prisoner, ladderA)) {
+                prisoner.x = ladderA.centerX;
+                prisoner.y -= playerClimbSpeed;
+            } else {
+                if(prisoner.y > 200) {
+                    prisoner.y = levelYs[1]; // prisoner needs to be on lower floor walkway
+                } else {
+                    prisoner.y = levelYs[0];
+                }
+                prisoner.x -= playerWalkSpeed;
+            }
+
+            if (prisoner.x <= 190) { // 190 is the right edge of the door
+                destroyPrisoner(prisoner);
+                console.log('prisoner escaped!1!!');
+                takeLife();
             }
         };
 
@@ -518,7 +567,10 @@ export default function playState(game) {
                     // TODO
                 },
                 escape: () => {
-                    // TODO
+                    prisoner.inputEnabled = false;
+                    let cell = cellContents[prisoner.cellIndex];
+                    cell[cell.indexOf(prisoner)] = null;
+                    escape(prisoner);
                 }
             })[prisoner.state]();
         });
@@ -526,6 +578,11 @@ export default function playState(game) {
 
     function updateScore() {
         scoreText.text = 'Score: ' + score.toString().padStart(6, '0');
+    }
+
+    function takeLife() {
+        let heartSprite = heartSprites.shift();
+        heartSprite.destroy();
     }
 
     /***********************************************************************************************************
@@ -588,14 +645,14 @@ export default function playState(game) {
         }, 16);
     }
 
-    function spawnGlow(x, y, sprite) {
-        let glow = game.add.sprite(x, y, sprite);
-
+    function spawnGlow(x, y, glow) {
         // glow.anchor.setTo(0.5, 1);
         // glow.x += glow.width/2;
         // glow.y += glow.height;
         // uncomment if you want to resize about the center
         glow.alpha = 0;
+        glow.x = x;
+        glow.y = y;
 
         let t = 0;
         const id = setInterval(() => {
@@ -603,18 +660,9 @@ export default function playState(game) {
             glow.alpha = Math.sin(t);
             if (t >= Math.PI) {
                 glow.alpha = 0;
-                glow.destroy();
                 clearInterval(id);
             }
         }, 16);
-    }
-
-    function spawnGlowLadder(like) {
-        spawnGlow(like.x, like.y, 'ladder');
-    }
-
-    function spawnGlowBars(like) {
-        spawnGlow(like.x, like.y, 'glowbars');
     }
 
     function lerp(from, to, amt) {
