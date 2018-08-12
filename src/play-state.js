@@ -147,12 +147,6 @@ export default function playState(game) {
     }
 
     function updatePlayer() {
-        const checkClickOnPrisoner = () => {
-            prisoners.forEach((pris, idx) => {
-                // ....
-            });
-        };
-
         const checkClickOnLadder = () => {
             ([ladderA, ladderB]).forEach((lad) => {
                 // phaser doesn't support "did we click it this frame?"
@@ -361,7 +355,6 @@ export default function playState(game) {
             checkClickOnChoppingBlock();
             checkClickOnLadder();
             checkClickOnSpace();
-            checkClickOnPrisoner();
             checkClickOnWaitingRoom();
             checkClickOnCell();
         };
