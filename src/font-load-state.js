@@ -1,7 +1,7 @@
 export default function fontLoadState(game) {
 
     window.fontsLoaded = function() {
-        game.state.start('ImageLoad');
+        game.state.start('AssetLoad');
     }
 
     return {

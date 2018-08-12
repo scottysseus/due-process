@@ -1,6 +1,10 @@
-export default function imageLoadState(game) {
+export default function assetLoadState(game) {
 
     function preload() {
+        let titleStyle = { font: '50pt Press Start 2P', fill: '#FFFFFF', align: 'center'};
+        let text = game.add.text(game.world.centerX, game.world.centerY, ' Loading...', titleStyle);
+        text.anchor.set(0.5);
+
         const img = (name) => `src/assets/${name}.png`;
         game.load.spritesheet('ogre', img('ogre'), 96/2, 72);
         game.load.spritesheet('player', img('player'), 64/2, 64);

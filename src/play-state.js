@@ -92,6 +92,7 @@ export default function playState(game) {
         // cells
         const newCell = (x, y) => {
             let c = game.add.sprite(x, y, 'bars');
+            c.animations.add('open', [0, 1, 2, 0]);
             return c;
         }
         cells.push(newCell(393, 63));
@@ -305,6 +306,8 @@ export default function playState(game) {
                 // only 2 slots per cell.
                 let slot = cellContents[clickedCell].indexOf(null);
                 if (slot < 0) { return; }
+                let cellSprite = cells[clickedCell];
+                cellSprite.animations.play('open', 15, false);
 
                 // 0 slot in this cell is the left, 1 slot is the right.
                 const moveOver = !!cellContents[clickedCell][0] ? 40 : 0;
@@ -396,6 +399,8 @@ export default function playState(game) {
 
         const moveToPrisoner = () => {
             if(isIntersect(player, clickedPrisoner)) {
+                let cellSprite = cells[clickedPrisoner.cellIndex];
+                cellSprite.animations.play('open', 15, false);
                 clickedPrisoner.inputEnabled = false;
                 clickedPrisoner.state = 'followingPlayer';
                 clickedPrisoner.y = player.y;
