@@ -8,6 +8,13 @@ export default function playState(game) {
     const levelYs = [ 175, 330 ];
     const cellWidth = 142;
 
+    // 'race': [things it hates]
+    const raceRelationsMap = {
+        'elf': 'goblin',
+        'ogre': 'hobbit',
+        'rebel': 'usurper'
+    };
+
     let player;
     let playerState = "stand"; // stand, moveladder, climb, move, dead
     let playerLevel = 0; // 0=top floor, 1=next floor down
@@ -233,6 +240,9 @@ export default function playState(game) {
                 cellContents[clickedCell][slot] = activePrisoner;
                 activePrisoner.x = cells[clickedCell].x + cellWidth / 2 + moveOver;
                 activePrisoner.y = levelYs[Math.floor(clickedCell / 3)] - 30;
+                activePrisoner.anger = 0;
+                activePrisoner.camaraderie = 0;
+                activePrisoner.cellIndex = clickedCell;
                 activePrisoner = null;
                 clickedCell = undefined;
                 playState = 'stand';
@@ -441,8 +451,38 @@ export default function playState(game) {
                 if(!activePrisoner) {
                     playerState = 'moveToPrisoner';
                     clickedPrisoner = prisoner;
+                    spawnGlow(prisoner.x - 16, prisoner.y + 3, 'glow');
                 }
+            }
+            let cell = cellContents[prisoner.cellIndex];
+            let hatedThings = cell.filter((toCheck) => {
+                return toCheck && toCheck.race === raceRelationsMap[prisoner.race];
             });
+            if(hatedThings.length > 0) {
+                prisoner.anger++;
+            }
+            let helpfulThings = cell.filter((toCheck) => {
+                return toCheck && toCheck !== prisoner&& toCheck.race === prisoner.race;
+            });
+            if(helpfulThings.length > 0) {
+                prisoner.camaraderie++;
+            }
+
+            if(prisoner.anger > 300) {
+                hatedThings.forEach((thing) => {
+                    const killThisIdx = cell.indexOf(thing);
+                    cell[killThisIdx] = null;
+                    destroyPrisoner(thing);
+                    score += 10;
+
+                });
+                prisoner.anger = 0;
+            }
+
+            if(prisoner.camaraderie > 300) {
+                prisoner.state = 'escape';
+                prisoner.camaraderie = 0;
+            }
         };
 
         prisoners.forEach((prisoner, idx) => {
