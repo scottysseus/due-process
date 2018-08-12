@@ -5,7 +5,7 @@ export default function assetLoadState(game) {
         let text = game.add.text(game.world.centerX, game.world.centerY, ' Loading...', titleStyle);
         text.anchor.set(0.5);
 
-        const img = (name) => `src/assets/${name}.png`;
+        const img = (name) => `src/assets/img/${name}.png`;
         game.load.spritesheet('ogre', img('ogre'), 96/2, 72);
         game.load.spritesheet('player', img('player'), 64/2, 64);
         game.load.image('bg', img('bgfull'));
@@ -27,6 +27,8 @@ export default function assetLoadState(game) {
         game.load.image('choppingblockglow', img('choppingblockglow'));
         game.load.spritesheet('axegrind', img('axegrind'), 112/2, 48);
         game.load.spritesheet('axeloading', img('axeloading'), 72, 25);
+
+        const sound = (name) => `src/assets/sound/${name}.mp3`;
     }
 
     function create() {
