@@ -1,3 +1,5 @@
+import playState from './play-state';
+
 export default function entryState(game) {
     return {
 
@@ -12,6 +14,7 @@ export default function entryState(game) {
 
             startOption.inputEnabled = true;
             startOption.events.onInputUp.add(function () {
+                game.state.add('Play', playState(game));
                 game.state.start('Play');
             });
 

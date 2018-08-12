@@ -1,6 +1,9 @@
-import torchHandler from './torch-handler';
+import torchHandler from './torch-handler'
 
 export default function playState(game) {
+    const debugOn = false;
+
+
     const prisonerSpawnX = 200;
     const playerWalkSpeed = 250/60;
     const playerClimbSpeed = 300/60;
@@ -47,6 +50,8 @@ export default function playState(game) {
     let axeLoader;
     let grindProgress = grindDuration;
     let grindingAxe;
+    let nextPrisonerDelay = 360; // frames till next prisoner
+    let timeSinceLastPrisoner = 120;
 
     function preload() {
         const img = (name) => `src/assets/${name}.png`;
@@ -127,8 +132,10 @@ export default function playState(game) {
         let grindAnimation = axeGrind.animations.add('grind');
 
         // axe grinding - the axe that he grings :)
-        grindingAxe = game.add.sprite(200, levelYs[1] - 12, 'axe');
+        grindingAxe = game.add.sprite(200, levelYs[1] - 48, 'axe');
         grindingAxe.alpha = 0;
+        grindingAxe.angle = -35;
+        grindingAxe.scale.x *= -1;
 
         // chopping block
         choppingBlock = game.add.sprite(250, levelYs[1], 'choppingblock');
@@ -205,6 +212,12 @@ export default function playState(game) {
 
         lastDebug = debug.isDown;
         lastSpace = space.isDown;
+
+        timeSinceLastPrisoner++;
+        if(timeSinceLastPrisoner >= nextPrisonerDelay) {
+            timeSinceLastPrisoner = 0;
+            newPrisonerArrival();
+        }
     }
 
     /***********************************************************************************************************
@@ -291,6 +304,22 @@ export default function playState(game) {
                 playerState = 'murder';
             }
         };
+
+        const checkClickOnPrisoner = () => {
+            cellContents.forEach((prisonerArray) => {
+                prisonerArray.forEach((prisoner) => {
+                    if (prisoner && prisoner.inputEnabled
+                        &&  isSameFloor(player, prisoner)
+                        && prisoner.input.justPressed(0, 20)) {
+                        if(!activePrisoner) {
+                            playerState = 'moveToPrisoner';
+                            clickedPrisoner = prisoner;
+                            spawnGlow(prisoner.x - 22, prisoner.y, prisonerGlow);
+                        }
+                    }
+                })
+            });
+        }
 
         const maybeLockHimUp = () => {
             if (Math.abs(player.x - playerTargetX) <= playerWalkSpeed * 2) {
@@ -448,6 +477,7 @@ export default function playState(game) {
             checkClickOnSpace();
             checkClickOnWaitingRoom();
             checkClickOnCell();
+            checkClickOnPrisoner();
         };
 
         ({
@@ -509,7 +539,7 @@ export default function playState(game) {
 
     function updatePrisoners() {
         // if (Math.random() * 100 > 99) {
-        if (space.isDown && !lastSpace) {
+        if (debugOn && space.isDown && !lastSpace) {
             newPrisonerArrival();
         }
 
@@ -526,13 +556,6 @@ export default function playState(game) {
 
         const bideTimeInCell = function(prisoner) {
             prisoner.inputEnabled = !activePrisoner;
-            if (prisoner.input.justPressed(0, 20)) {
-                if(!activePrisoner) {
-                    playerState = 'moveToPrisoner';
-                    clickedPrisoner = prisoner;
-                    spawnGlow(prisoner.x - 22, prisoner.y, prisonerGlow);
-                }
-            }
             let cell = cellContents[prisoner.cellIndex];
             let hatedThings = cell.filter((toCheck) => {
                 return toCheck && toCheck.race === raceRelationsMap[prisoner.race];
@@ -618,11 +641,19 @@ export default function playState(game) {
 
     function updateScore() {
         scoreText.text = 'Score: ' + score.toString().padStart(6, '0');
+        if(score % 50 === 0) {
+            nextPrisonerDelay = nextPrisonerDelay > 120 ? nextPrisonerDelay - 30 : 120;
+        }
     }
 
     function takeLife() {
         let heartSprite = heartSprites.shift();
-        heartSprite.destroy();
+        if(heartSprite) {
+            heartSprite.destroy();
+            if(heartSprites.length < 1) {
+                game.state.start('GameOver');
+            }
+        }
     }
 
     function animateAxeLoading() {
@@ -632,10 +663,20 @@ export default function playState(game) {
         axeLoader.animations.play('load', animationFps, false);
     }
 
+    function isSameFloor(object1, object2) {
+        return object1.y && object2.y && (200 - object1.y) * (200 - object2.y) > 0;
+    }
+
     /***********************************************************************************************************
      * update helpers
      */
     function newPrisonerArrival() {
+        // lose a life for every prisoner that cannot fit into the queue
+        let lastPrisoner = waitingPrisoners[waitingPrisoners.length - 1];
+        if(lastPrisoner &&  lastPrisoner.x - prisonerSpawnX <= 16) {
+            takeLife();
+            return;
+        }
         // pick random race
         const race = races[Math.floor(Math.random() * races.length)];
         let prisoner = game.add.sprite(prisonerSpawnX, levelYs[0], race);
@@ -738,23 +779,26 @@ export default function playState(game) {
     }
 
     function render() {
-        for (let prisoner of prisoners) {
-            game.debug.text(prisoner.state, prisoner.x - 32, prisoner.y - 64, "green");
+        if(debugOn) {
+            for (let prisoner of prisoners) {
+                game.debug.text(prisoner.state, prisoner.x - 32, prisoner.y - 64, "green");
+            }
+            for (let i = 0; i < cellContents.length; i++) {
+                const theCell = cellContents[i];
+                const formattedResidents = theCell.map((res) => {
+                    if (res === null) { return 'null'; }
+                    if (res === undefined) { return 'undefined'; }
+                    if (!res.race) { return '???'; }
+                    return res.race;
+                });
+                game.debug.text(`${theCell.length}: [${formattedResidents.join(',')}]`, 0, i * 16 + 400);
+            }
+            game.debug.text('grind progress: ' + grindProgress, 0, 6*16 + 400);
+            game.debug.text('activePrisoner: ' + (activePrisoner ? activePrisoner.race : '___'), 0, 7*16 + 400);
+            game.debug.text('clickedPrisoner: ' + (clickedPrisoner ? clickedPrisoner.race : '___'), 0, 8*16 + 400);
+            game.debug.text(playerState, player.x - 32, player.y - 64, "white");
         }
-        for (let i = 0; i < cellContents.length; i++) {
-            const theCell = cellContents[i];
-            const formattedResidents = theCell.map((res) => {
-                if (res === null) { return 'null'; }
-                if (res === undefined) { return 'undefined'; }
-                if (!res.race) { return '???'; }
-                return res.race;
-            });
-            game.debug.text(`${theCell.length}: [${formattedResidents.join(',')}]`, 0, i * 16 + 400);
-        }
-        game.debug.text('grind progress: ' + grindProgress, 0, 6*16 + 400);
-        game.debug.text('activePrisoner: ' + (activePrisoner ? activePrisoner.race : '___'), 0, 7*16 + 400);
-        game.debug.text('clickedPrisoner: ' + (clickedPrisoner ? clickedPrisoner.race : '___'), 0, 8*16 + 400);
-        game.debug.text(playerState, player.x - 32, player.y - 64, "white");
+        
     }
 
     return {preload, create, update, render};
