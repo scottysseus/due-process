@@ -46,6 +46,8 @@ export default function playState(game) {
         game.load.image('choppingblock', img('choppingblock'));
         game.load.spritesheet('bars', img('bars'), 426/3, 100);
         game.load.spritesheet('glowbars', img('glowbars'), 426/3, 100);
+        game.load.image('glow', img('glow'));
+        game.load.image('axe', img('axe'));
     }
 
     function create() {
