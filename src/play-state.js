@@ -34,7 +34,7 @@ export default function playState(game) {
     let cellContents = [[null, null],[null, null],[null, null],[null, null],[null, null],[null, null]];
     let score, scoreText;
     let axe;
-    let axeMurderTimer;
+    let axeMurderTimer = 0;
 
     function preload() {
         const img = (name) => `src/assets/${name}.png`;
@@ -346,12 +346,20 @@ export default function playState(game) {
             activePrisoner.angle = -45;
             if (!axe) {
                 axe = game.add.sprite(player.x + 15, player.y - 36, 'axe');
+                axe.scale.setTo(0, 0);
                 axe.anchor.setTo(0.6, 1);
             }
 
-            axe.angle += 4;
-
-            if (axe.angle > 100) {
+            if (axeMurderTimer >= 0 && axeMurderTimer < 30) {
+                const scale = lerp(0, 1, axeMurderTimer / 30);
+                axe.scale.setTo(scale, scale);
+            } else if (axeMurderTimer >= 30 && axeMurderTimer < 60) {
+                const ang = lerp(0, -45, (axeMurderTimer - 30) / 30);
+                axe.angle = ang;
+            } else if (axeMurderTimer >= 60 && axeMurderTimer < 80) {
+                const ang = lerp(-45, 120, (axeMurderTimer - 60) / 20);
+                axe.angle = ang;
+            } else {
                 axe.destroy();
                 axe = undefined;
                 activePrisoner.destroy();
@@ -601,6 +609,10 @@ export default function playState(game) {
 
     function spawnGlowBars(like) {
         spawnGlow(like.x, like.y, 'glowbars');
+    }
+
+    function lerp(from, to, amt) {
+        return (1 - amt) * from + amt * to;
     }
 
     function render() {
