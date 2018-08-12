@@ -165,7 +165,7 @@ export default function playState(game) {
             if(playerState === 'moveWaitingRoom' && isIntersect(waitingRoomBox, player)
                 && !activePrisoner) {
                 if(waitingPrisoners.length > 0) {
-                    activePrisoner = waitingPrisoners.pop();
+                    activePrisoner = waitingPrisoners.shift();
                     activePrisoner.state = 'followingPlayer';
                 } else {
                     playerState = 'stand';
