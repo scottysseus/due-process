@@ -7,6 +7,7 @@ export default function playState(game) {
     const races = [ 'elf', 'hobbit', 'usurper', 'rebel', 'goblin', 'ogre' ];
     const levelYs = [ 175, 330 ];
     const cellWidth = 142;
+    const grindDuration = 360;
 
     // 'race': [things it hates]
     const raceRelationsMap = {
@@ -32,6 +33,7 @@ export default function playState(game) {
     let activePrisoner;
     let clickedPrisoner;
     let choppingBlock;
+    let axeGrind;
     let cells = [];
     let clickedCell;
     let cellContents = [[null, null],[null, null],[null, null],[null, null],[null, null],[null, null]];
@@ -42,6 +44,9 @@ export default function playState(game) {
     let lives = 8;
     let choppingblockGlow, ladderGlow, cellGlow, prisonerGlow;
     let heartSprites = [];
+    let axeLoader;
+    let grindProgress = grindDuration;
+    let grindingAxe;
 
     function preload() {
         const img = (name) => `src/assets/${name}.png`;
@@ -65,6 +70,7 @@ export default function playState(game) {
         game.load.image('heart', img('heart'));
         game.load.image('choppingblockglow', img('choppingblockglow'));
         game.load.spritesheet('axegrind', img('axegrind'), 112/2, 48);
+        game.load.spritesheet('axeloading', img('axeloading'), 72, 25);
     }
 
     function create() {
@@ -114,6 +120,16 @@ export default function playState(game) {
         // torches
         torchHandler(game).placeTorches();
 
+        // axe grind
+        axeGrind = game.add.sprite(200, levelYs[1], 'axegrind');
+        axeGrind.anchor.setTo(0.5, 1);
+        axeGrind.scale.setTo(1.5, 1.5);
+        let grindAnimation = axeGrind.animations.add('grind');
+
+        // axe grinding - the axe that he grings :)
+        grindingAxe = game.add.sprite(200, levelYs[1] - 12, 'axe');
+        grindingAxe.alpha = 0;
+
         // chopping block
         choppingBlock = game.add.sprite(250, levelYs[1], 'choppingblock');
         choppingBlock.anchor.setTo(0.5, 0.7);
@@ -150,6 +166,18 @@ export default function playState(game) {
             heartSprites.push(game.add.sprite(heartX, heartY, 'heart'));
         }
 
+        // axe loading
+        let axeLoadingX = 180;
+        let axeLoadingY = 15;
+        let axeLoadingBackground = game.add.sprite(axeLoadingX, axeLoadingY, 'axe');
+        axeLoadingBackground.alpha = 0.5;
+        axeLoadingBackground.angle = 90;
+        axeLoadingBackground.anchor.setTo(0, 1);
+        axeLoadingBackground.y = axeLoadingBackground - 4;
+
+        axeLoader = game.add.sprite(axeLoadingX, axeLoadingY, 'axeloading', 3);
+        axeLoader.animations.add('load');
+
         space = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         debug = game.input.keyboard.addKey(Phaser.Keyboard.D);
     }
@@ -162,6 +190,13 @@ export default function playState(game) {
     function update() {
         if (debug.isDown && !lastDebug) {
             debugger;
+        }
+
+        grindProgress++;
+        if (grindProgress >= grindDuration) {
+            grindProgress = grindDuration;
+            axeGrind.animations.stop('grind', true);
+            grindingAxe.alpha = 0;
         }
 
         updateCells();
@@ -231,7 +266,7 @@ export default function playState(game) {
         };
 
         const checkClickOnChoppingBlock = () => {
-            if (playerLevel === 1 && choppingBlock.input.justPressed(0, 20)) {
+            if (grindProgress >= grindDuration && playerLevel === 1 && choppingBlock.input.justPressed(0, 20)) {
                 playerState = 'moveToBlock';
                 playerTargetX = choppingBlock.x;
                 spawnGlow(choppingBlock.x, choppingBlock.y, choppingblockGlow);
@@ -399,6 +434,11 @@ export default function playState(game) {
                 axeMurderTimer = 0;
                 score += 10;
                 updateScore();
+
+                grindProgress = 0;
+                animateAxeLoading();
+                axeGrind.animations.play('grind', 10, true);
+                grindingAxe.alpha = 1;
             }
         };
 
@@ -585,6 +625,13 @@ export default function playState(game) {
         heartSprite.destroy();
     }
 
+    function animateAxeLoading() {
+        const sections = 4;
+        const fps = 60;
+        const animationFps = fps / (grindDuration / (sections - 1));
+        axeLoader.animations.play('load', animationFps, false);
+    }
+
     /***********************************************************************************************************
      * update helpers
      */
@@ -702,10 +749,11 @@ export default function playState(game) {
                 if (!res.race) { return '???'; }
                 return res.race;
             });
-            game.debug.text(`${theCell.length}: [${formattedResidents.join(',')}]`, 0, i * 16 + 16);
+            game.debug.text(`${theCell.length}: [${formattedResidents.join(',')}]`, 0, i * 16 + 400);
         }
-        game.debug.text('activePrisoner: ' + (activePrisoner ? activePrisoner.race : '___'), 0, 8*16);
-        game.debug.text('clickedPrisoner: ' + (clickedPrisoner ? clickedPrisoner.race : '___'), 0, 9*16);
+        game.debug.text('grind progress: ' + grindProgress, 0, 6*16 + 400);
+        game.debug.text('activePrisoner: ' + (activePrisoner ? activePrisoner.race : '___'), 0, 7*16 + 400);
+        game.debug.text('clickedPrisoner: ' + (clickedPrisoner ? clickedPrisoner.race : '___'), 0, 8*16 + 400);
         game.debug.text(playerState, player.x - 32, player.y - 64, "white");
     }
 
