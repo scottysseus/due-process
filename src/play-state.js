@@ -89,7 +89,7 @@ export default function playState(game) {
 
         // chopping block
         choppingBlock = game.add.sprite(200, levelYs[1], 'choppingblock');
-        choppingBlock.anchor.setTo(0.5, 1);
+        choppingBlock.anchor.setTo(0.5, 0.7);
 
         // the player
         player = game.add.sprite(0, 0, 'player');
