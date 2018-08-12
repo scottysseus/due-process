@@ -26,6 +26,8 @@ export default function playState(game) {
     let clickedCell;
     let cellContents = [[],[],[],[],[],[]];
     let score, scoreText;
+    let axe;
+    let axeMurderTimer;
 
     function preload() {
         const img = (name) => `src/assets/${name}.png`;
@@ -96,6 +98,7 @@ export default function playState(game) {
         // chopping block
         choppingBlock = game.add.sprite(200, levelYs[1], 'choppingblock');
         choppingBlock.anchor.setTo(0.5, 0.7);
+        choppingBlock.inputEnabled = true;
 
         // the player
         player = game.add.sprite(0, 0, 'player');
@@ -194,6 +197,14 @@ export default function playState(game) {
             }
         };
 
+        const checkClickOnChoppingBlock = () => {
+            if (playerLevel === 1 && choppingBlock.input.justPressed(0, 20)) {
+                playerState = 'moveToBlock';
+                playerTargetX = choppingBlock.x;
+                spawnGlow(choppingBlock.x, choppingBlock.y, 'ladder');
+            }
+        };
+
         const maybeAttendPrisoner = () => {
             if(playerState === 'moveWaitingRoom' && isIntersect(waitingRoomBox, player)
                 && !activePrisoner) {
@@ -203,6 +214,13 @@ export default function playState(game) {
                 } else {
                     playerState = 'stand';
                 }
+            }
+        };
+
+        const maybeExecutePrisoner = () => {
+            if (activePrisoner && isIntersect(player, choppingBlock)) {
+                activePrisoner.state = 'murder';
+                playerState = 'murder';
             }
         };
 
@@ -315,7 +333,32 @@ export default function playState(game) {
             }
         };
 
+        const doExecution = () => {
+            axeMurderTimer++;
+            player.x = choppingBlock.x - 64;
+            activePrisoner.x = choppingBlock.x + activePrisoner.height / Math.sqrt(2);
+            activePrisoner.angle = -45;
+            if (!axe) {
+                axe = game.add.sprite(player.x + 15, player.y - 36, 'axe');
+                axe.anchor.setTo(0.6, 1);
+            }
+
+            axe.angle += 4;
+
+            if (axe.angle > 100) {
+                axe.destroy();
+                axe = undefined;
+                activePrisoner.destroy();
+                prisoners.splice(prisoners.indexOf(activePrisoner), 1);
+                activePrisoner = undefined;
+                playerState = 'stand';
+                axeMurderTimer = 0;
+                score += 10;
+            }
+        };
+
         const checkClicks = function() {
+            checkClickOnChoppingBlock();
             checkClickOnLadder();
             checkClickOnSpace();
             checkClickOnPrisoner();
@@ -358,6 +401,18 @@ export default function playState(game) {
                 turnOnAnimations();
                 moveToPrisoner();
                 checkClicks();
+            },
+            moveToBlock: () => {
+                clickedPrisoner = null;
+                maybeExecutePrisoner();
+                turnOnAnimations();
+                moveToTargetSpace();
+                checkClicks();
+            },
+            murder: () => {
+                clickedPrisoner = null;
+                turnOffAnimations();
+                doExecution();
             }
         })[playerState]();
     }
@@ -402,6 +457,12 @@ export default function playState(game) {
                 },
                 thrownIn: () => {
                     bideTimeInCell(prisoner);
+                },
+                murder: () => {
+                    // TODO
+                },
+                escape: () => {
+                    // TODO
                 }
             })[prisoner.state]();
         });
