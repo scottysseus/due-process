@@ -876,6 +876,13 @@ function playState(game) {
                 let cell = cellContents[clickedPrisoner.cellIndex];
                 let prisonerIndex = cell.indexOf(clickedPrisoner);
                 cell[prisonerIndex] = null;
+                let otherPrisoner = cell[(prisonerIndex + 1) % 2];
+                clickedPrisoner.anger = 0;
+                clickedPrisoner.camaraderie = 0;
+                if (otherPrisoner) {
+                    otherPrisoner.anger = 0;
+                    otherPrisoner.camaraderie = 0;
+                }
                 clickedPrisoner.cellIndex = null;
                 clickedPrisoner = null;
                 activePrisoner.bringToTop();
