@@ -8,4 +8,4 @@ game.state.add('FontLoad', fontLoadState(game));
 game.state.add('Entry', entryState(game));
 game.state.add('About', aboutState(game));
 game.state.add('Play', playState(game));
-game.state.start('Play');
+game.state.start('FontLoad');
