@@ -448,6 +448,11 @@ export default function playState(game) {
         };
 
         prisoners.forEach((prisoner, idx) => {
+            if (!prisoner.alive) {
+                console.warn("attempted to update dead prisoner", prisoner);
+                return; // skip him, he's been deleted and did not disappear somehow
+            }
+
             ({
                 entering: () => {
                     moveForwardInLine(waitingPrisoners, prisoner);
@@ -484,6 +489,11 @@ export default function playState(game) {
         prisoner.race = race;
         prisoner.state = 'entering'; // entering, waitingroom
         prisoner.anchor.setTo(0.5, 1);
+    }
+
+    function destroyPrisoner(prisoner) {
+        prisoners.splice(prisoners.indexOf(prisoner), 1);
+        prisoner.destroy();
     }
 
     function isIntersect(a, b) {
