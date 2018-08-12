@@ -3,7 +3,7 @@ import torchHandler from './torch-handler';
 export default function playState(game) {
     const prisonerSpawnX = 200;
     const playerWalkSpeed = 250/60;
-    const playerClimbSpeed = 200/60;
+    const playerClimbSpeed = 300/60;
     const races = [ 'elf', 'hobbit', 'usurper', 'rebel', 'goblin', 'ogre' ];
     const levelYs = [ 175, 330 ];
     const cellWidth = 142;
