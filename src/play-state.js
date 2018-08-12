@@ -413,8 +413,11 @@ export default function playState(game) {
     }
 
     function render() {
+        for (let prisoner of prisoners) {
+            game.debug.text(prisoner.state, prisoner.x - 32, prisoner.y - 64, "green");
+        }
         game.debug.pixel(player.x+0.5, player.y+0.5, "red");
-        game.debug.text(playerState, player.x - 64, player.y - 64, "white");
+        game.debug.text(playerState, player.x - 32, player.y - 64, "white");
     }
 
     return {preload, create, update, render};
