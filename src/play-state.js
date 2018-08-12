@@ -170,7 +170,7 @@ export default function playState(game) {
         };
 
         const checkClickOnWaitingRoom = () => {
-            if(waitingRoomBox.input.justPressed(0,20)) {
+            if(waitingRoomBox.input.justPressed(0,20) && playerLevel === 0) {
                 playerTargetX = 330;
                 playerState = 'moveWaitingRoom';
             }
