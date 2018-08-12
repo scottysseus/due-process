@@ -24,7 +24,7 @@ export default function playState(game) {
     let choppingBlock;
     let cells = [];
     let clickedCell;
-    let cellContents = [[],[],[],[],[],[]];
+    let cellContents = [[null, null],[null, null],[null, null],[null, null],[null, null],[null, null]];
     let score, scoreText;
     let axe;
     let axeMurderTimer;
@@ -223,13 +223,14 @@ export default function playState(game) {
         const maybeLockHimUp = () => {
             if (Math.abs(player.x - playerTargetX) <= playerWalkSpeed * 2) {
                 // only 2 slots per cell.
-                if (cellContents[clickedCell].length === 2) { return; }
+                let slot = cellContents[clickedCell].indexOf(null);
+                if (slot < 0) { return; }
 
                 // 0 slot in this cell is the left, 1 slot is the right.
                 const moveOver = !!cellContents[clickedCell][0] ? 40 : 0;
 
                 activePrisoner.state = 'thrownIn';
-                cellContents[clickedCell].push(activePrisoner);
+                cellContents[clickedCell][slot] = activePrisoner;
                 activePrisoner.x = cells[clickedCell].x + cellWidth / 2 + moveOver;
                 activePrisoner.y = levelYs[Math.floor(clickedCell / 3)] - 30;
                 activePrisoner = null;
@@ -317,11 +318,12 @@ export default function playState(game) {
                 clickedPrisoner.y = player.y;
                 activePrisoner = clickedPrisoner;
                 playerState = 'stand';
-                for (let i = 0; i < cells.length; i++) {
-                    cellContents[i] = cellContents[i].filter((toCheck) => {
-                        return toCheck.x !== clickedPrisoner.x && toCheck.y !== clickedPrisoner.y;
+                let cell = cellContents[clickedPrisoner.cellIndex];
+                let prisonerIndex = cell.findIndex((toCheck) => {
+                    return toCheck && toCheck.x === clickedPrisoner.x && toCheck.y === clickedPrisoner.y;
                     });
-                }
+                cell[prisonerIndex] = null;
+                clickedPrisoner.cellIndex = null;
                 clickedPrisoner = null;
             } else {
                 playerTargetX = clickedPrisoner.x;
