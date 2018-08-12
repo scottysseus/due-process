@@ -309,6 +309,7 @@ export default function playState(game) {
                 let cellSprite = cells[clickedCell];
                 cellSprite.animations.play('open', 15, false);
                 cellSprite.bringToTop();
+                player.bringToTop();
 
                 // 0 slot in this cell is the left, 1 slot is the right.
                 const moveOver = !!cellContents[clickedCell][0] ? 40 : 0;
