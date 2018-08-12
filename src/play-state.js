@@ -246,7 +246,7 @@ export default function playState(game) {
                 amClimb = gonnaClimb;
                 gonnaClimb = null;
             }
-        }
+        };
 
         const moveToTargetLadder = () => {
             const direction = Math.sign(gonnaClimb.x - player.x);
