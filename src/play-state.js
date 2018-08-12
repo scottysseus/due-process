@@ -385,7 +385,7 @@ export default function playState(game) {
                 if(!clickedPrisoner && !activePrisoner) {
                     playerState = 'moveToPrisoner';
                     clickedPrisoner = prisoner;
-        }
+                }
             });
         };
 
