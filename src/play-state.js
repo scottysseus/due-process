@@ -601,8 +601,29 @@ export default function playState(game) {
     }
 
     function destroyPrisoner(prisoner) {
-        prisoners.splice(prisoners.indexOf(prisoner), 1);
+        const idx = prisoners.indexOf(prisoner);
+        if (idx === -1) {
+            console.warn("Tried to destroy a prisoner but couldn't find him.");
+        }
+        const vacateThis = findCellAndSlot(prisoner);
+        if (vacateThis) {
+            cellContents[vacateThis[0]][vacateThis[1]];
+        }
+
+        prisoners.splice(idx, 1);
         prisoner.destroy();
+    }
+
+    function findCellAndSlot(prisoner) {
+        for (let c = 0; c < cellContents.length; c++) {
+            const cell = cellContents[c];
+            for (let s = 0; s < cell.length; s++) {
+                const pris = cell[c];
+                if (prisoner === pris)
+                    return [c, s];
+            }
+        }
+        return null;
     }
 
     function isIntersect(a, b) {
