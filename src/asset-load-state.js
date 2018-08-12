@@ -33,6 +33,9 @@ export default function assetLoadState(game) {
         game.load.audio('grindsound', sound('grindsound'));
         game.load.audio('screamsound', sound('screamsound'));
         game.load.audio('swingsound', sound('swingsound'));
+        game.load.audio('escapesound', sound('escapesound'));
+        game.load.audio('escapesound2', sound('escapesound2'));
+        game.load.audio('prisonmurdersound', sound('prisonmurdersound'));
     }
 
     function create() {

@@ -58,6 +58,9 @@ export default function playState(game) {
     let grindAxeSound;
     let screamSound;
     let swingSound;
+    let prisonMurderSound;
+
+    let escapeSounds = []; let currEscapeSound = 0;
 
     function preload() {
         
@@ -150,7 +153,12 @@ export default function playState(game) {
         player.x = 400;
         player.y = levelYs[0];
 
+        // prisoner sounds
         screamSound = game.add.audio('screamsound');
+        let escapeSound = game.add.audio('escapesound', 0.25);
+        let escapeSound2 = game.add.audio('escapesound2', 0.25);
+        escapeSounds = [escapeSound, escapeSound2];
+        prisonMurderSound = game.add.audio('prisonmurdersound');
 
         // score
         let scoreStyle = { font: '15pt Press Start 2P', fill: 'white', align: 'left' };
@@ -576,6 +584,7 @@ export default function playState(game) {
 
             if(prisoner.anger > 300) {
                 hatedThings.forEach((thing) => {
+                    prisonMurderSound.play();
                     const killThisIdx = cell.indexOf(thing);
                     cell[killThisIdx] = null;
                     destroyPrisoner(thing);
@@ -588,6 +597,9 @@ export default function playState(game) {
             if(prisoner.camaraderie > 480) {
                 prisoner.state = 'escape';
                 prisoner.camaraderie = 0;
+                currEscapeSound = (currEscapeSound + 1) % 2;
+                escapeSounds[currEscapeSound].play();
+                
             }
         };
 
