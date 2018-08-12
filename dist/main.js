@@ -1,6 +1,446 @@
-import torchHandler from './torch-handler'
+/******/ (function(modules) { // webpackBootstrap
+/******/ 	// The module cache
+/******/ 	var installedModules = {};
+/******/
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/
+/******/ 		// Check if module is in cache
+/******/ 		if(installedModules[moduleId]) {
+/******/ 			return installedModules[moduleId].exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = installedModules[moduleId] = {
+/******/ 			i: moduleId,
+/******/ 			l: false,
+/******/ 			exports: {}
+/******/ 		};
+/******/
+/******/ 		// Execute the module function
+/******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
+/******/
+/******/ 		// Flag the module as loaded
+/******/ 		module.l = true;
+/******/
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/
+/******/
+/******/ 	// expose the modules object (__webpack_modules__)
+/******/ 	__webpack_require__.m = modules;
+/******/
+/******/ 	// expose the module cache
+/******/ 	__webpack_require__.c = installedModules;
+/******/
+/******/ 	// define getter function for harmony exports
+/******/ 	__webpack_require__.d = function(exports, name, getter) {
+/******/ 		if(!__webpack_require__.o(exports, name)) {
+/******/ 			Object.defineProperty(exports, name, { enumerable: true, get: getter });
+/******/ 		}
+/******/ 	};
+/******/
+/******/ 	// define __esModule on exports
+/******/ 	__webpack_require__.r = function(exports) {
+/******/ 		if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 			Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 		}
+/******/ 		Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 	};
+/******/
+/******/ 	// create a fake namespace object
+/******/ 	// mode & 1: value is a module id, require it
+/******/ 	// mode & 2: merge all properties of value into the ns
+/******/ 	// mode & 4: return value when already ns object
+/******/ 	// mode & 8|1: behave like require
+/******/ 	__webpack_require__.t = function(value, mode) {
+/******/ 		if(mode & 1) value = __webpack_require__(value);
+/******/ 		if(mode & 8) return value;
+/******/ 		if((mode & 4) && typeof value === 'object' && value && value.__esModule) return value;
+/******/ 		var ns = Object.create(null);
+/******/ 		__webpack_require__.r(ns);
+/******/ 		Object.defineProperty(ns, 'default', { enumerable: true, value: value });
+/******/ 		if(mode & 2 && typeof value != 'string') for(var key in value) __webpack_require__.d(ns, key, function(key) { return value[key]; }.bind(null, key));
+/******/ 		return ns;
+/******/ 	};
+/******/
+/******/ 	// getDefaultExport function for compatibility with non-harmony modules
+/******/ 	__webpack_require__.n = function(module) {
+/******/ 		var getter = module && module.__esModule ?
+/******/ 			function getDefault() { return module['default']; } :
+/******/ 			function getModuleExports() { return module; };
+/******/ 		__webpack_require__.d(getter, 'a', getter);
+/******/ 		return getter;
+/******/ 	};
+/******/
+/******/ 	// Object.prototype.hasOwnProperty.call
+/******/ 	__webpack_require__.o = function(object, property) { return Object.prototype.hasOwnProperty.call(object, property); };
+/******/
+/******/ 	// __webpack_public_path__
+/******/ 	__webpack_require__.p = "";
+/******/
+/******/
+/******/ 	// Load entry module and return exports
+/******/ 	return __webpack_require__(__webpack_require__.s = "./src/index.js");
+/******/ })
+/************************************************************************/
+/******/ ({
 
-export default function playState(game) {
+/***/ "./node_modules/webpack/buildin/global.js":
+/*!***********************************!*\
+  !*** (webpack)/buildin/global.js ***!
+  \***********************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1, eval)("this");
+} catch (e) {
+	// This works if the window reference is available
+	if (typeof window === "object") g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
+
+/***/ }),
+
+/***/ "./src/about-state.js":
+/*!****************************!*\
+  !*** ./src/about-state.js ***!
+  \****************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return aboutState; });
+/* harmony import */ var _entry_state__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./entry-state */ "./src/entry-state.js");
+
+
+function aboutState(game) {
+
+    let textCrawlStyle = { font: '10pt Press Start 2P', fill: 'white', align: 'left', wordWrap: true, wordWrapWidth: game.width-60};
+    let textCrawl = 'Premise\n\n'
+                    + 'The Kingdom of Fecea is asphyxiating from the nauseating fumes of crime, bankruptcy, and moral degeneracy.\n'
+                    + 'Brigands, highway robbers, and non-humans frustrate the attempts of the Kingdom\'s law enforcement to maintain order.\n\n'
+                    + 'In the bowels of the Kingdom\'s most infamous gaol, you are Thelonious, the lone executioner. The prison is running out of space!';
+
+    return {
+        create: function() {
+            let buttonStyle = { font: '10pt Press Start 2P', fill: '#FFFFFF', align: 'left'};
+            let backButton = game.add.text(60, 30, '< Back', buttonStyle);
+
+            let instructionsButtonStyle = { font: '10pt Press Start 2P', fill: '#FFFFFF', align: 'right'};
+            let instructionsButton = game.add.text(game.world.width - 240, 30, 'Instructions >', instructionsButtonStyle);
+
+            backButton.inputEnabled = true;
+            backButton.events.onInputUp.add(function () {
+                game.state.start('Entry');
+            });
+
+            instructionsButton.inputEnabled = true;
+            instructionsButton.events.onInputUp.add(() => {
+                game.state.start('Instructions');
+            });
+
+            let aboutText = game.add.text(60, 90, textCrawl, textCrawlStyle);
+        }
+    };
+
+};
+
+
+/***/ }),
+
+/***/ "./src/asset-load-state.js":
+/*!*********************************!*\
+  !*** ./src/asset-load-state.js ***!
+  \*********************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return assetLoadState; });
+function assetLoadState(game) {
+
+    function preload() {
+        let titleStyle = { font: '50pt Press Start 2P', fill: '#FFFFFF', align: 'center'};
+        let text = game.add.text(game.world.centerX, game.world.centerY, ' Loading...', titleStyle);
+        text.anchor.set(0.5);
+
+        const img = (name) => `src/assets/img/${name}.png`;
+        game.load.spritesheet('ogre', img('ogre'), 96/2, 72);
+        game.load.spritesheet('player', img('player'), 64/2, 64);
+        game.load.image('bg', img('bgfull'));
+        game.load.spritesheet('elf', img('elf'), 64/2, 64);
+        game.load.spritesheet('hobbit', img('hobbit'), 64/2, 32);
+        game.load.spritesheet('usurper', img('usurper'), 64/2, 64);
+        game.load.spritesheet('rebel', img('rebel'), 64/2, 64);
+        game.load.spritesheet('goblin', img('goblin'), 64/2, 32);
+        game.load.image('ladder', img('ladderglow'));
+        game.load.image('capturebox', img('capturebox'));
+        game.load.spritesheet('torch', img('torch'), 8, 16);
+        game.load.image('pointer', img('pointer'));
+        game.load.image('choppingblock', img('choppingblock'));
+        game.load.spritesheet('bars', img('bars'), 426/3, 100);
+        game.load.spritesheet('glowbars', img('glowbars'), 426/3, 100);
+        game.load.image('glow', img('glow'));
+        game.load.image('axe', img('axe'));
+        game.load.image('heart', img('heart'));
+        game.load.image('choppingblockglow', img('choppingblockglow'));
+        game.load.spritesheet('axegrind', img('axegrind'), 112/2, 48);
+        game.load.spritesheet('axeloading', img('axeloading'), 72, 25);
+
+        const sound = (name) => `src/assets/sound/${name}.mp3`;
+        game.load.audio('gateopensound', sound('gateopensound'));
+        game.load.audio('grindsound', sound('grindsound'));
+        game.load.audio('screamsound', sound('screamsound'));
+        game.load.audio('swingsound', sound('swingsound'));
+    }
+
+    function create() {
+        game.state.start('Entry');
+    }
+
+    return {preload, create};
+
+}
+
+/***/ }),
+
+/***/ "./src/entry-state.js":
+/*!****************************!*\
+  !*** ./src/entry-state.js ***!
+  \****************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return entryState; });
+/* harmony import */ var _play_state__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./play-state */ "./src/play-state.js");
+
+
+function entryState(game) {
+    return {
+
+        create: function() {
+            let titleStyle = { font: '50pt Press Start 2P', fill: '#FFFFFF', align: 'center'};
+            let text = game.add.text(game.world.centerX, 100, 'Due Process', titleStyle);
+            text.anchor.set(0.5);
+
+            var optionStyle = { font: '30pt Press Start 2P', fill: 'white', align: 'left' };
+            var startOption = game.add.text(30, 280, 'Start', optionStyle);
+            var aboutOption = game.add.text(30, 380, 'About', optionStyle);
+
+            startOption.inputEnabled = true;
+            startOption.events.onInputUp.add(function () {
+                game.state.add('Play', Object(_play_state__WEBPACK_IMPORTED_MODULE_0__["default"])(game));
+                game.state.start('Play');
+            });
+
+            aboutOption.inputEnabled = true;
+            aboutOption.events.onInputUp.add(function() {
+                game.state.start('About');
+            });
+        }
+    }
+};
+
+
+/***/ }),
+
+/***/ "./src/font-load-state.js":
+/*!********************************!*\
+  !*** ./src/font-load-state.js ***!
+  \********************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* WEBPACK VAR INJECTION */(function(global) {/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return fontLoadState; });
+function fontLoadState(game) {
+
+    window.fontsLoaded = function() {
+        game.state.start('AssetLoad');
+    }
+
+    return {
+        preload: function() {
+            //  The Google WebFont Loader will look for this object, so create it before loading the script.
+            global.WebFontConfig = {
+
+                //  'active' means all requested fonts have finished loading
+                //  We set a 1 second delay before calling 'createText'.
+                //  For some reason if we don't the browser cannot render the text the first time it's created.
+                active: function() {
+                    game.time.events.add(Phaser.Timer.SECOND, fontsLoaded, this);
+                },
+
+                //  The Google Fonts we want to load (specify as many as you like in the array)
+                google: {
+                    families: ['Press Start 2P']
+                }
+            };
+
+            //  Load the Google WebFont Loader script
+            game.load.script('webfont', '//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js');
+        }
+    };
+
+}
+
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../node_modules/webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js")))
+
+/***/ }),
+
+/***/ "./src/game-over-state.js":
+/*!********************************!*\
+  !*** ./src/game-over-state.js ***!
+  \********************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return gameOverState; });
+function gameOverState(game) {
+
+    function create() {
+        let titleStyle = { font: '50pt Press Start 2P', fill: '#FFFFFF', align: 'center'};
+        let text = game.add.text(game.world.centerX, game.world.centerY, 'Game Over', titleStyle);
+        text.anchor.set(0.5);
+
+        let buttonStyle = { font: '10pt Press Start 2P', fill: '#FFFFFF', align: 'left'};
+        let backButton = game.add.text(60, 30, '< Back', buttonStyle);
+
+        backButton.inputEnabled = true;
+        backButton.events.onInputUp.add(function () {
+                game.state.start('Entry');
+        });
+    }
+    
+    return {create};
+}
+
+/***/ }),
+
+/***/ "./src/index.js":
+/*!**********************!*\
+  !*** ./src/index.js ***!
+  \**********************/
+/*! no exports provided */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _font_load_state__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./font-load-state */ "./src/font-load-state.js");
+/* harmony import */ var _asset_load_state__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./asset-load-state */ "./src/asset-load-state.js");
+/* harmony import */ var _play_state__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./play-state */ "./src/play-state.js");
+/* harmony import */ var _entry_state__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./entry-state */ "./src/entry-state.js");
+/* harmony import */ var _about_state__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./about-state */ "./src/about-state.js");
+/* harmony import */ var _game_over_state__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./game-over-state */ "./src/game-over-state.js");
+/* harmony import */ var _instructions_state__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./instructions-state */ "./src/instructions-state.js");
+/* harmony import */ var _prisoners_instructions_state__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./prisoners-instructions-state */ "./src/prisoners-instructions-state.js");
+
+
+ // initialize the play state in entry state to reset all the variables in play state
+
+
+
+
+
+
+
+const game = new Phaser.Game(960, 540, Phaser.AUTO, 'game', undefined, undefined, false);
+game.state.add('FontLoad', Object(_font_load_state__WEBPACK_IMPORTED_MODULE_0__["default"])(game));
+game.state.add('AssetLoad', Object(_asset_load_state__WEBPACK_IMPORTED_MODULE_1__["default"])(game));
+game.state.add('Entry', Object(_entry_state__WEBPACK_IMPORTED_MODULE_3__["default"])(game));
+game.state.add('About', Object(_about_state__WEBPACK_IMPORTED_MODULE_4__["default"])(game));
+game.state.add('GameOver', Object(_game_over_state__WEBPACK_IMPORTED_MODULE_5__["default"])(game));
+game.state.add('Instructions', Object(_instructions_state__WEBPACK_IMPORTED_MODULE_6__["default"])(game));
+game.state.add('Prisoners', Object(_prisoners_instructions_state__WEBPACK_IMPORTED_MODULE_7__["default"])(game));
+game.state.start('FontLoad');
+
+
+/***/ }),
+
+/***/ "./src/instructions-state.js":
+/*!***********************************!*\
+  !*** ./src/instructions-state.js ***!
+  \***********************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return instructionsState; });
+function instructionsState(game) {
+
+    let instructionsTextStyle = { font: '10pt Press Start 2P', fill: 'white', align: 'left', wordWrap: true, wordWrapWidth: game.width-60};
+    let instructionsText = 'Gain points for every prisoner who dies!!!\n\n'
+                         + '1. Move by right clicking.\n\n'
+                         + '2. Prisoners will queue up by the door. Click on them to attend to them.\n\n'
+                         + '3. While attending to a prisoner, you can excort them to a cell or to the chopping block.\n\n'
+                         + '4. Cells can hold two prisoners, and they interact with eachother. Some prisoners kill eachother (good),'
+                         + 'but if two prisoners of the same type share a cell for too long, they can escape!\n\n'
+                         + '5. Each prisoner who escapes takes one of your lives with them!\n\n'
+                         + '6. The chopping block requires the axe to be sharpened after each use (its availability can be seen at the top).';
+
+    function create() {
+        let backButtonStyle = { font: '10pt Press Start 2P', fill: '#FFFFFF', align: 'left'};
+        let backButton = game.add.text(60, 30, '< Back', backButtonStyle);
+
+        let racesButtonStyle = { font: '10pt Press Start 2P', fill: '#FFFFFF', align: 'left'};
+        let racesButton = game.add.text(game.world.width - 240, 30, 'Prisoners >', racesButtonStyle);
+
+        backButton.inputEnabled = true;
+        backButton.events.onInputUp.add(function () {
+            game.state.start('About');
+        });
+
+        racesButton.inputEnabled = true;
+        racesButton.events.onInputUp.add(() => {
+            game.state.start('Prisoners');
+        });
+
+        game.add.text(60, 90, instructionsText, instructionsTextStyle);
+    }
+
+    return {create};
+}
+
+/***/ }),
+
+/***/ "./src/play-state.js":
+/*!***************************!*\
+  !*** ./src/play-state.js ***!
+  \***************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return playState; });
+/* harmony import */ var _torch_handler__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./torch-handler */ "./src/torch-handler.js");
+
+
+function playState(game) {
     const debugOn = false;
 
 
@@ -110,7 +550,7 @@ export default function playState(game) {
         gateOpenSound = game.add.audio('gateopensound');
 
         // torches
-        torchHandler(game).placeTorches();
+        Object(_torch_handler__WEBPACK_IMPORTED_MODULE_0__["default"])(game).placeTorches();
 
         // axe grind
         axeGrind = game.add.sprite(200, levelYs[1], 'axegrind');
@@ -808,3 +1248,99 @@ export default function playState(game) {
 
     return {preload, create, update, render};
 }
+
+
+/***/ }),
+
+/***/ "./src/prisoners-instructions-state.js":
+/*!*********************************************!*\
+  !*** ./src/prisoners-instructions-state.js ***!
+  \*********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return prisonersInstructionsState; });
+function prisonersInstructionsState(game) {
+
+    let instructionsTextStyle = { font: '10pt Press Start 2P', fill: 'white', align: 'left', wordWrap: true, wordWrapWidth: game.width-60};
+
+    const races = [ 'elf', 'hobbit', 'usurper', 'rebel', 'goblin', 'ogre' ];
+    const descriptions = [
+        'Their nobility provokes the rebel, causing him to start a fight he can\'t win.',
+        'They can outsmart (and eliminate) goblins.',
+        'They can dominate simple-minded ogres.',
+        'Hates the bourgeois usurpers.',
+        'Hatred of elves runs deep in this species.',
+        'Eats little hobbitses.'
+    ];
+
+    function preload() {
+        
+    }
+
+    function create() {
+        let backButtonStyle = { font: '10pt Press Start 2P', fill: '#FFFFFF', align: 'left'};
+        let backButton = game.add.text(60, 30, '< Back', backButtonStyle);
+
+        backButton.inputEnabled = true;
+        backButton.events.onInputUp.add(function () {
+            game.state.start('About');
+        });
+
+        let startY = 90;
+        let spriteX = 60;
+        let nameX = 120;
+        let descriptionX = 256;
+        let currY = startY;
+
+        races.forEach((raceName, i) => {
+            let prisoner = game.add.sprite(spriteX, currY, raceName);
+            prisoner.animations.add('walk');
+            prisoner.animations.play('walk', 8, true);
+            prisoner.anchor.setTo(0, 0.5);
+
+            game.add.text(nameX, currY, raceName, instructionsTextStyle);
+            game.add.text(descriptionX, currY, descriptions[i], instructionsTextStyle);
+            currY += 80;
+        });
+    }
+
+    return {preload, create};
+}
+
+/***/ }),
+
+/***/ "./src/torch-handler.js":
+/*!******************************!*\
+  !*** ./src/torch-handler.js ***!
+  \******************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return torchHandler; });
+function torchHandler(game) {
+
+    let torchX = [225, 548, 718, 548, 718];
+    let torchY = [111, 111, 111, 271, 271];
+
+    return {
+        placeTorches: function() {
+            for(var i = 0; i < torchX.length; ++i) {
+                let torch = game.add.sprite(torchX[i], torchY[i], 'torch');
+                let light = torch.animations.add('light');
+                torch.animations.play('light', 12, true);
+            }
+        }
+    };
+
+}
+
+
+/***/ })
+
+/******/ });
+//# sourceMappingURL=main.js.map

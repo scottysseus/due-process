@@ -29,6 +29,10 @@ export default function assetLoadState(game) {
         game.load.spritesheet('axeloading', img('axeloading'), 72, 25);
 
         const sound = (name) => `src/assets/sound/${name}.mp3`;
+        game.load.audio('gateopensound', sound('gateopensound'));
+        game.load.audio('grindsound', sound('grindsound'));
+        game.load.audio('screamsound', sound('screamsound'));
+        game.load.audio('swingsound', sound('swingsound'));
     }
 
     function create() {
