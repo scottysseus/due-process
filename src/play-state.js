@@ -368,30 +368,36 @@ export default function playState(game) {
 
         ({
             stand: () => {
+                clickedPrisoner = null;
                 turnOffAnimations();
                 checkClicks();
             },
             moveladder: () => {
+                clickedPrisoner = null;
                 turnOnAnimations();
                 moveToTargetLadder();
                 checkClicks();
             },
             moveToCell: () => {
+                clickedPrisoner = null;
                 maybeLockHimUp();
                 turnOnAnimations();
                 moveToTargetSpace();
                 checkClicks();
             },
             move: () => {
+                clickedPrisoner = null;
                 turnOnAnimations();
                 moveToTargetSpace();
                 checkClicks();
             },
             climb: () => {
+                clickedPrisoner = null;
                 turnOnAnimations();
                 climb();
             },
             moveWaitingRoom: () => {
+                clickedPrisoner = null;
                 maybeAttendPrisoner();
                 turnOnAnimations();
                 moveToTargetSpace();
