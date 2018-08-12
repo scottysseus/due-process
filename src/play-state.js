@@ -20,6 +20,7 @@ export default function playState(game) {
     let waitingPrisoners = [];
     let activePrisoner;
     let choppingBlock;
+    let bars = [];
 
     function preload() {
         const img = (name) => `src/assets/${name}.png`;
@@ -36,6 +37,7 @@ export default function playState(game) {
         game.load.spritesheet('torch', img('torch'), 8, 16);
         game.load.image('pointer', img('pointer'));
         game.load.image('choppingblock', img('choppingblock'));
+        game.load.spritesheet('bars', img('bars'), 426/3, 100);
     }
 
     function create() {
@@ -69,6 +71,18 @@ export default function playState(game) {
         ladderB = game.add.sprite(905, 135, 'ladder');
         ladderB.inputEnabled = true;
         ladderB.alpha = 0.0;
+
+        // bars
+        const newBars = (x, y) => {
+            let b = game.add.sprite(x, y, 'bars');
+            return b;
+        }
+        bars.push(newBars(393, 63));
+        bars.push(newBars(562, 63));
+        bars.push(newBars(732, 63));
+        bars.push(newBars(393, 223));
+        bars.push(newBars(562, 223));
+        bars.push(newBars(732, 223));
 
         // torches
         torchHandler(game).placeTorches();
