@@ -32,7 +32,8 @@ export default function playState(game) {
     let cells = [];
     let clickedCell;
     let cellContents = [[null, null],[null, null],[null, null],[null, null],[null, null],[null, null]];
-    let score, scoreText;
+    let score = 0;
+    let scoreText;
     let axe;
     let axeMurderTimer = 0;
 
@@ -368,6 +369,7 @@ export default function playState(game) {
                 playerState = 'stand';
                 axeMurderTimer = 0;
                 score += 10;
+                updateScore();
             }
         };
 
@@ -482,7 +484,7 @@ export default function playState(game) {
                     cell[killThisIdx] = null;
                     destroyPrisoner(thing);
                     score += 10;
-
+                    updateScore();
                 });
                 prisoner.anger = 0;
             }
@@ -520,6 +522,10 @@ export default function playState(game) {
                 }
             })[prisoner.state]();
         });
+    }
+
+    function updateScore() {
+        scoreText.text = 'Score: ' + score.toString().padStart(6, '0');
     }
 
     /***********************************************************************************************************
