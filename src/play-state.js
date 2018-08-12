@@ -204,9 +204,15 @@ export default function playState(game) {
 
         const maybeLockHimUp = () => {
             if (Math.abs(player.x - playerTargetX) <= playerWalkSpeed * 2) {
+                // only 2 slots per cell.
+                if (cellContents[clickedCell].length === 2) { return; }
+
+                // 0 slot in this cell is the left, 1 slot is the right.
+                const moveOver = !!cellContents[clickedCell][0] ? 40 : 0;
+
                 activePrisoner.state = 'thrownIn';
                 cellContents[clickedCell].push(activePrisoner);
-                activePrisoner.x = cells[clickedCell].x + cellWidth / 2;
+                activePrisoner.x = cells[clickedCell].x + cellWidth / 2 + moveOver;
                 activePrisoner.y = levelYs[Math.floor(clickedCell / 3)] - 30;
                 activePrisoner = null;
                 clickedCell = undefined;
