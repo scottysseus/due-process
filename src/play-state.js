@@ -435,9 +435,9 @@ export default function playState(game) {
         };
 
         const bideTimeInCell = function(prisoner) {
-            prisoner.inputEnabled = true;
-            prisoner.events.onInputUp.add(function () {
-                if(!clickedPrisoner && !activePrisoner) {
+            prisoner.inputEnabled = !activePrisoner;
+            if (prisoner.input.justPressed(0, 20)) {
+                if(!activePrisoner) {
                     playerState = 'moveToPrisoner';
                     clickedPrisoner = prisoner;
                 }
