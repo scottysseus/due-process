@@ -556,6 +556,18 @@ export default function playState(game) {
         for (let prisoner of prisoners) {
             game.debug.text(prisoner.state, prisoner.x - 32, prisoner.y - 64, "green");
         }
+        for (let i = 0; i < cellContents.length; i++) {
+            const theCell = cellContents[i];
+            const formattedResidents = theCell.map((res) => {
+                if (res === null) { return 'null'; }
+                if (res === undefined) { return 'undefined'; }
+                if (!res.race) { return '???'; }
+                return res.race;
+            });
+            game.debug.text(`${theCell.length}: [${formattedResidents.join(',')}]`, 0, i * 16 + 16);
+        }
+        game.debug.text('activePrisoner: ' + (activePrisoner ? activePrisoner.race : '___'), 0, 8*16);
+        game.debug.text('clickedPrisoner: ' + (clickedPrisoner ? clickedPrisoner.race : '___'), 0, 9*16);
         game.debug.text(playerState, player.x - 32, player.y - 64, "white");
     }
 
