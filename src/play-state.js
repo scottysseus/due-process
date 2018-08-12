@@ -319,9 +319,7 @@ export default function playState(game) {
                 activePrisoner = clickedPrisoner;
                 playerState = 'stand';
                 let cell = cellContents[clickedPrisoner.cellIndex];
-                let prisonerIndex = cell.findIndex((toCheck) => {
-                    return toCheck && toCheck.x === clickedPrisoner.x && toCheck.y === clickedPrisoner.y;
-                    });
+                let prisonerIndex = cell.indexOf(clickedPrisoner);
                 cell[prisonerIndex] = null;
                 clickedPrisoner.cellIndex = null;
                 clickedPrisoner = null;
