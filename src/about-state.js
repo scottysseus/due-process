@@ -11,11 +11,19 @@ export default function aboutState(game) {
     return {
         create: function() {
             let buttonStyle = { font: '10pt Press Start 2P', fill: '#FFFFFF', align: 'left'};
-            let backButton = game.add.text(60, 30, 'Back', buttonStyle);
+            let backButton = game.add.text(60, 30, '< Back', buttonStyle);
+
+            let instructionsButtonStyle = { font: '10pt Press Start 2P', fill: '#FFFFFF', align: 'right'};
+            let instructionsButton = game.add.text(game.world.width - 240, 30, 'Instructions >', instructionsButtonStyle);
 
             backButton.inputEnabled = true;
             backButton.events.onInputUp.add(function () {
                 game.state.start('Entry');
+            });
+
+            instructionsButton.inputEnabled = true;
+            instructionsButton.events.onInputUp.add(() => {
+                game.state.start('Instructions');
             });
 
             let aboutText = game.add.text(60, 90, textCrawl, textCrawlStyle);
