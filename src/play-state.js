@@ -38,6 +38,7 @@ export default function playState(game) {
         game.load.image('pointer', img('pointer'));
         game.load.image('choppingblock', img('choppingblock'));
         game.load.spritesheet('bars', img('bars'), 426/3, 100);
+        game.load.spritesheet('glowbars', img('glowbars'), 426/3, 100);
     }
 
     function create() {
@@ -112,6 +113,7 @@ export default function playState(game) {
             debugger;
         }
 
+        updateBars();
         updatePlayer();
         updatePrisoners();
 
@@ -122,6 +124,20 @@ export default function playState(game) {
     /***********************************************************************************************************
      * object class updates
      */
+    function updateBars() {
+        for (let idx = 0; idx < bars.length; idx++) {
+            let b = bars[idx];
+            b.inputEnabled = // to be clickable...
+                !!activePrisoner && // player must carry a prisoner
+                (Math.floor(idx/3) === playerLevel) && // and be on the same vertical level as the bars
+                playerState !== 'climb'; // and not be currently climbing away from that vertical level
+
+            if (b.input && b.input.justPressed(0, 20)) {
+                spawnGlowBars(b);
+            }
+        }
+    }
+
     function updatePlayer() {
         const checkClickOnPrisoner = () => {
             prisoners.forEach((pris, idx) => {
@@ -367,25 +383,33 @@ export default function playState(game) {
         }, 16);
     }
 
-    function spawnGlowLadder(like) {
-        let ladder = game.add.sprite(like.x, like.y, 'ladder');
+    function spawnGlow(x, y, sprite) {
+        let glow = game.add.sprite(x, y, sprite);
 
-        ladder.anchor.setTo(0.5, 1);
-        ladder.x += ladder.width/2;
-        ladder.y += ladder.height;
-        ladder.alpha = 0;
-
+        // glow.anchor.setTo(0.5, 1);
+        // glow.x += glow.width/2;
+        // glow.y += glow.height;
+        // uncomment if you want to resize about the center
+        glow.alpha = 0;
 
         let t = 0;
         const id = setInterval(() => {
             t += Math.PI / 30;
-            ladder.alpha = Math.sin(t);
+            glow.alpha = Math.sin(t);
             if (t >= Math.PI) {
-                ladder.alpha = 0;
-                ladder.destroy();
+                glow.alpha = 0;
+                glow.destroy();
                 clearInterval(id);
             }
         }, 16);
+    }
+
+    function spawnGlowLadder(like) {
+        spawnGlow(like.x, like.y, 'ladder');
+    }
+
+    function spawnGlowBars(like) {
+        spawnGlow(like.x, like.y, 'glowbars');
     }
 
     function render() {
