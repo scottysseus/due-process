@@ -20,6 +20,7 @@ export default function playState(game) {
     let prisoners = []; // every prisoner, regardless of their `state`, lives here
     let waitingPrisoners = [];
     let activePrisoner;
+    let clickedPrisoner;
     let choppingBlock;
     let cells = [];
     let clickedCell;
@@ -290,6 +291,25 @@ export default function playState(game) {
             }
         };
 
+        const moveToPrisoner = () => {
+            if(isIntersect(player, clickedPrisoner)) {
+                clickedPrisoner.inputEnabled = false;
+                clickedPrisoner.state = 'followingPlayer';
+                clickedPrisoner.y = player.y;
+                activePrisoner = clickedPrisoner;
+                playerState = 'stand';
+                for (let i = 0; i < cells.length; i++) {
+                    cellContents[i] = cellContents[i].filter((toCheck) => {
+                        return toCheck.x !== clickedPrisoner.x && toCheck.y !== clickedPrisoner.y;
+                    });
+                }
+                clickedPrisoner = null;
+            } else {
+                playerTargetX = clickedPrisoner.x;
+                moveToTargetSpace();
+            }
+        };
+
         const checkClicks = function() {
             checkClickOnLadder();
             checkClickOnSpace();
@@ -328,6 +348,11 @@ export default function playState(game) {
                 turnOnAnimations();
                 moveToTargetSpace();
                 checkClicks();
+            },
+            moveToPrisoner: () => {
+                turnOnAnimations();
+                moveToPrisoner();
+                checkClicks();
             }
         })[playerState]();
     }
@@ -347,7 +372,17 @@ export default function playState(game) {
                 prisoner.state = 'entering';
                 prisoner.x += 200/60;
             }
+        };
+
+        const bideTimeInCell = function(prisoner) {
+            prisoner.inputEnabled = true;
+            prisoner.events.onInputUp.add(function () {
+                if(!clickedPrisoner && !activePrisoner) {
+                    playerState = 'moveToPrisoner';
+                    clickedPrisoner = prisoner;
         }
+            });
+        };
 
         prisoners.forEach((prisoner, idx) => {
             ({
@@ -358,10 +393,10 @@ export default function playState(game) {
                     moveForwardInLine(waitingPrisoners, prisoner);
                 },
                 followingPlayer: () => {
-
+                    prisoner.inputEnabled = false;
                 },
                 thrownIn: () => {
-
+                    bideTimeInCell(prisoner);
                 }
             })[prisoner.state]();
         });
