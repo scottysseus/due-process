@@ -6,6 +6,7 @@ export default function playState(game) {
     const playerClimbSpeed = 200/60;
     const races = [ 'elf', 'hobbit', 'usurper', 'rebel', 'goblin', 'ogre' ];
     const levelYs = [ 175, 330 ];
+    const cellWidth = 142;
 
     let player;
     let playerState = "stand"; // stand, moveladder, climb, move, dead
@@ -20,7 +21,9 @@ export default function playState(game) {
     let waitingPrisoners = [];
     let activePrisoner;
     let choppingBlock;
-    let bars = [];
+    let cells = [];
+    let clickedCell;
+    let cellContents = [[],[],[],[],[],[]];
 
     function preload() {
         const img = (name) => `src/assets/${name}.png`;
@@ -73,17 +76,17 @@ export default function playState(game) {
         ladderB.inputEnabled = true;
         ladderB.alpha = 0.0;
 
-        // bars
-        const newBars = (x, y) => {
-            let b = game.add.sprite(x, y, 'bars');
-            return b;
+        // cells
+        const newCell = (x, y) => {
+            let c = game.add.sprite(x, y, 'bars');
+            return c;
         }
-        bars.push(newBars(393, 63));
-        bars.push(newBars(562, 63));
-        bars.push(newBars(732, 63));
-        bars.push(newBars(393, 223));
-        bars.push(newBars(562, 223));
-        bars.push(newBars(732, 223));
+        cells.push(newCell(393, 63));
+        cells.push(newCell(562, 63));
+        cells.push(newCell(732, 63));
+        cells.push(newCell(393, 223));
+        cells.push(newCell(562, 223));
+        cells.push(newCell(732, 223));
 
         // torches
         torchHandler(game).placeTorches();
@@ -113,7 +116,7 @@ export default function playState(game) {
             debugger;
         }
 
-        updateBars();
+        updateCells();
         updatePlayer();
         updatePrisoners();
 
@@ -124,17 +127,13 @@ export default function playState(game) {
     /***********************************************************************************************************
      * object class updates
      */
-    function updateBars() {
-        for (let idx = 0; idx < bars.length; idx++) {
-            let b = bars[idx];
-            b.inputEnabled = // to be clickable...
+    function updateCells() {
+        for (let idx = 0; idx < cells.length; idx++) {
+            let c = cells[idx];
+            c.inputEnabled = // to be clickable...
                 !!activePrisoner && // player must carry a prisoner
-                (Math.floor(idx/3) === playerLevel) && // and be on the same vertical level as the bars
+                (Math.floor(idx/3) === playerLevel) && // and be on the same vertical level as the cell
                 playerState !== 'climb'; // and not be currently climbing away from that vertical level
-
-            if (b.input && b.input.justPressed(0, 20)) {
-                spawnGlowBars(b);
-            }
         }
     }
 
@@ -177,6 +176,20 @@ export default function playState(game) {
             maybeAttendPrisoner();
         };
 
+        const checkClickOnCell = () => {
+            for (let i = 0; i < cells.length; i++) {
+                const b = cells[i];
+                if (b.input && b.input.justPressed(0, 20)) {
+                    clickedCell = i;
+                    playerTargetX = b.x + cellWidth/2;
+                    playerState = "moveToCell";
+                    spawnGlowBars(b);
+                }
+            }
+        };
+
+
+
         const maybeAttendPrisoner = () => {
             if(playerState === 'moveWaitingRoom' && isIntersect(waitingRoomBox, player)
                 && !activePrisoner) {
@@ -186,6 +199,18 @@ export default function playState(game) {
                 } else {
                     playerState = 'stand';
                 }
+            }
+        };
+
+        const maybeLockHimUp = () => {
+            if (Math.abs(player.x - playerTargetX) <= playerWalkSpeed * 2) {
+                activePrisoner.state = 'thrownIn';
+                cellContents[clickedCell].push(activePrisoner);
+                activePrisoner.x = cells[clickedCell].x + cellWidth / 2;
+                activePrisoner.y = levelYs[Math.floor(clickedCell / 3)] - 30;
+                activePrisoner = null;
+                clickedCell = undefined;
+                playState = 'stand';
             }
         };
 
@@ -266,6 +291,7 @@ export default function playState(game) {
             checkClickOnSpace();
             checkClickOnPrisoner();
             checkClickOnWaitingRoom();
+            checkClickOnCell();
         };
 
         ({
@@ -276,6 +302,12 @@ export default function playState(game) {
             moveladder: () => {
                 turnOnAnimations();
                 moveToTargetLadder();
+                checkClicks();
+            },
+            moveToCell: () => {
+                maybeLockHimUp();
+                turnOnAnimations();
+                moveToTargetSpace();
                 checkClicks();
             },
             move: () => {
@@ -322,6 +354,9 @@ export default function playState(game) {
                     moveForwardInLine(waitingPrisoners, prisoner);
                 },
                 followingPlayer: () => {
+
+                },
+                thrownIn: () => {
 
                 }
             })[prisoner.state]();
