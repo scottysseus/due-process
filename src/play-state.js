@@ -51,19 +51,19 @@ export default function playState(game) {
 
         // click-to-move areas
         spaceTop = game.add.sprite(325, 20, 'capturebox');
-        spaceTop.alpha = 0.1;
+        spaceTop.alpha = 0.0;
         spaceTop.width = 810;
         spaceTop.height = 170;
         spaceTop.inputEnabled = true;
         spaceBottom = game.add.sprite(145, 200, 'capturebox');
-        spaceBottom.alpha = 0.1;
+        spaceBottom.alpha = 0.0;
         spaceBottom.width = 810;
         spaceBottom.height = 170;
         spaceBottom.inputEnabled = true;
 
         // waiting area
         waitingRoomBox = game.add.sprite(145, 20, 'capturebox');
-        waitingRoomBox.alpha = 0.1;
+        waitingRoomBox.alpha = 0.0;
         waitingRoomBox.width = 180;
         waitingRoomBox.height = 170;
         waitingRoomBox.inputEnabled = true;
