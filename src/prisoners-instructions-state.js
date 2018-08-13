@@ -20,9 +20,17 @@ export default function prisonersInstructionsState(game) {
         let backButtonStyle = { font: '10pt Press Start 2P', fill: '#FFFFFF', align: 'left'};
         let backButton = game.add.text(60, 30, '< Back', backButtonStyle);
 
+        let raceButtonStyle = { font: '10pt Press Start 2P', fill: '#FFFFFF', align: 'right'};
+        let raceButton = game.add.text(game.world.width - 270, 30, 'Prisoners (cont.) >', raceButtonStyle);
+
         backButton.inputEnabled = true;
         backButton.events.onInputUp.add(function () {
             game.state.start('Instructions');
+        });
+
+        raceButton.inputEnabled = true;
+            raceButton.events.onInputUp.add(() => {
+                game.state.start('Races');
         });
 
         let startY = 90;
