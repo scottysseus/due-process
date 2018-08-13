@@ -1,6 +1,16 @@
 export default function assetLoadState(game) {
 
     function preload() {
+        const sound = (name) => `src/assets/sound/${name}.mp3`;
+        game.load.audio('theme', sound('theme'));
+        game.load.audio('gateopensound', sound('gateopensound'));
+        game.load.audio('grindsound', sound('grindsound'));
+        game.load.audio('screamsound', sound('screamsound'));
+        game.load.audio('swingsound', sound('swingsound'));
+        game.load.audio('escapesound', sound('escapesound'));
+        game.load.audio('escapesound2', sound('escapesound2'));
+        game.load.audio('prisonmurdersound', sound('prisonmurdersound'));
+
         let titleStyle = { font: '50pt Press Start 2P', fill: '#FFFFFF', align: 'center'};
         let text = game.add.text(game.world.centerX, game.world.centerY, ' Loading...', titleStyle);
         text.anchor.set(0.5);
@@ -28,14 +38,9 @@ export default function assetLoadState(game) {
         game.load.spritesheet('axegrind', img('axegrind'), 112/2, 48);
         game.load.spritesheet('axeloading', img('axeloading'), 72, 25);
 
-        const sound = (name) => `src/assets/sound/${name}.mp3`;
-        game.load.audio('gateopensound', sound('gateopensound'));
-        game.load.audio('grindsound', sound('grindsound'));
-        game.load.audio('screamsound', sound('screamsound'));
-        game.load.audio('swingsound', sound('swingsound'));
-        game.load.audio('escapesound', sound('escapesound'));
-        game.load.audio('escapesound2', sound('escapesound2'));
-        game.load.audio('prisonmurdersound', sound('prisonmurdersound'));
+        
+           
+        window.theme = new Phaser.Sound(game, 'theme', 2, true); 
     }
 
     function create() {
