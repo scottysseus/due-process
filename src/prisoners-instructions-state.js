@@ -22,7 +22,7 @@ export default function prisonersInstructionsState(game) {
 
         backButton.inputEnabled = true;
         backButton.events.onInputUp.add(function () {
-            game.state.start('About');
+            game.state.start('Instructions');
         });
 
         let startY = 90;
