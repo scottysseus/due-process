@@ -18,6 +18,13 @@ module.exports = {
                 'imports-loader?this=>window',
                 'exports-loader?window.createjs'
             ]
+        }, {
+            use: {
+            loader:'babel-loader',
+            options: { presets: ['es2015'] }
+            },
+            test: /\.js$/,
+            exclude: /node_modules/
         }]
     },
     devtool: "source-map"
