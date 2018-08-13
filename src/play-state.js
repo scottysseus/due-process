@@ -63,7 +63,7 @@ export default function playState(game) {
     let escapeSounds = []; let currEscapeSound = 0;
 
     function preload() {
-        
+
     }
 
     function create() {
@@ -344,7 +344,7 @@ export default function playState(game) {
                 activePrisoner.cellIndex = clickedCell;
                 activePrisoner = null;
                 clickedCell = undefined;
-                playState = 'stand';
+                playerState = 'stand';
             }
         };
 
@@ -606,7 +606,7 @@ export default function playState(game) {
                 prisoner.camaraderie = 0;
                 currEscapeSound = (currEscapeSound + 1) % 2;
                 escapeSounds[currEscapeSound].play();
-                
+
             }
         };
 
@@ -822,7 +822,7 @@ export default function playState(game) {
             game.debug.text('clickedPrisoner: ' + (clickedPrisoner ? clickedPrisoner.race : '___'), 0, 8*16 + 400);
             game.debug.text(playerState, player.x - 32, player.y - 64, "white");
         }
-        
+
     }
 
     return {preload, create, update, render};

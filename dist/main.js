@@ -849,7 +849,7 @@ function playState(game) {
                 activePrisoner.cellIndex = clickedCell;
                 activePrisoner = null;
                 clickedCell = undefined;
-                exports.default = playState = 'stand';
+                playerState = 'stand';
             }
         };
 
