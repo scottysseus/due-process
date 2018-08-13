@@ -136,7 +136,8 @@ function aboutState(game) {
     let textCrawl = 'Premise\n\n'
                     + 'The Kingdom of Fecea is asphyxiating from the nauseating fumes of crime, bankruptcy, and moral degeneracy.\n'
                     + 'Brigands, highway robbers, and non-humans frustrate the attempts of the Kingdom\'s law enforcement to maintain order.\n\n'
-                    + 'In the bowels of the Kingdom\'s most infamous gaol, you are Thelonious, the lone executioner. The prison is running out of space!';
+                    + 'In the bowels of the Kingdom\'s most infamous gaol, you are Thelonious, the lone executioner.\n\n'
+                    + 'Your goal: prevent the prison from overflowing, while remaining carefully within the law (which permits spontaneous executions).';
 
     return {
         create: function() {
