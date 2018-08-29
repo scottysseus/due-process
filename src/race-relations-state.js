@@ -1,3 +1,5 @@
+import playState from './play-state';
+
 export default function raceRelationsState(game) {
 
     let arrowTextStyle = { font: '10pt Press Start 2P', fill: 'white', align: 'left', wordWrap: true, wordWrapWidth: game.width-60};
@@ -20,7 +22,15 @@ export default function raceRelationsState(game) {
 
     function create() {
         let backButtonStyle = { font: '10pt Press Start 2P', fill: '#FFFFFF', align: 'left'};
+        let playButtonStyle = { font: '20pt Press Start 2P', fill: '#FFFFFF', align: 'left'};
         let backButton = game.add.text(60, 30, '< Back', backButtonStyle);
+        var startOption = game.add.text(game.world.width - 220, 30, 'Start', playButtonStyle);
+
+        startOption.inputEnabled = true;
+        startOption.events.onInputUp.add(function () {
+            game.state.add('Play', playState(game));
+            game.state.start('Play');
+        });
 
         backButton.inputEnabled = true;
         backButton.events.onInputUp.add(function () {

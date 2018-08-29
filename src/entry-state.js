@@ -1,5 +1,3 @@
-import playState from './play-state';
-
 export default function entryState(game) {
     return {
         preload: function() {
@@ -17,16 +15,9 @@ export default function entryState(game) {
 
             var optionStyle = { font: '30pt Press Start 2P', fill: 'white', align: 'left' };
             var startOption = game.add.text(30, 280, 'Start', optionStyle);
-            var aboutOption = game.add.text(30, 380, 'About', optionStyle);
 
             startOption.inputEnabled = true;
             startOption.events.onInputUp.add(function () {
-                game.state.add('Play', playState(game));
-                game.state.start('Play');
-            });
-
-            aboutOption.inputEnabled = true;
-            aboutOption.events.onInputUp.add(function() {
                 game.state.start('About');
             });
             if(!window.theme.isPlaying) {
