@@ -131,34 +131,38 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 exports.default = aboutState;
-
-var _entryState = __webpack_require__(/*! ./entry-state */ "./src/entry-state.js");
-
-var _entryState2 = _interopRequireDefault(_entryState);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 function aboutState(game) {
 
     var textCrawlStyle = { font: '10pt Press Start 2P', fill: 'white', align: 'left', wordWrap: true, wordWrapWidth: game.width - 60 };
-    var textCrawl = 'Premise\n\n' + 'The Kingdom of Fecea is asphyxiating from the nauseating fumes of crime, bankruptcy, and moral degeneracy.\n' + 'Brigands, highway robbers, and non-humans frustrate the attempts of the Kingdom\'s law enforcement to maintain order.\n\n' + 'In the bowels of the Kingdom\'s most infamous gaol, you are Thelonious, the lone executioner.\n\n' + 'Your goal: prevent the prison from overflowing, while remaining carefully within the law (which permits spontaneous executions).';
+    var textCrawl = 'About\n\n' + 'Original story, art, music, and gameplay developed by libjared and scottyseus for' + ' Ludum Dare Jam 42.\n\n' + 'Check out the links below:';
 
     return {
         create: function create() {
             var buttonStyle = { font: '10pt Press Start 2P', fill: '#FFFFFF', align: 'left' };
             var backButton = game.add.text(60, 30, '< Back', buttonStyle);
 
-            var instructionsButtonStyle = { font: '10pt Press Start 2P', fill: '#FFFFFF', align: 'right' };
-            var instructionsButton = game.add.text(game.world.width - 240, 30, 'Instructions >', instructionsButtonStyle);
+            var scottyseusButton = game.add.text(60, 240, '> scottyseus on GitHub <', buttonStyle);
+            var libjaredButton = game.add.text(60, 280, '> libjared on GitHub <', buttonStyle);
+            var submissionButton = game.add.text(60, 320, '> Ludum Dare page <', buttonStyle);
 
             backButton.inputEnabled = true;
             backButton.events.onInputUp.add(function () {
                 game.state.start('Entry');
             });
 
-            instructionsButton.inputEnabled = true;
-            instructionsButton.events.onInputUp.add(function () {
-                game.state.start('Instructions');
+            scottyseusButton.inputEnabled = true;
+            scottyseusButton.events.onInputUp.add(function () {
+                window.location.href = "https://github.com/scottyseus/due-process";
+            });
+
+            libjaredButton.inputEnabled = true;
+            libjaredButton.events.onInputUp.add(function () {
+                window.location.href = "https://github.com/libjared";
+            });
+
+            submissionButton.inputEnabled = true;
+            submissionButton.events.onInputUp.add(function () {
+                window.location.href = "https://ldjam.com/events/ludum-dare/42/due-process-1";
             });
 
             var aboutText = game.add.text(60, 90, textCrawl, textCrawlStyle);
@@ -266,11 +270,18 @@ function entryState(game) {
 
             var optionStyle = { font: '30pt Press Start 2P', fill: 'white', align: 'left' };
             var startOption = game.add.text(30, 280, 'Start', optionStyle);
+            var aboutOption = game.add.text(30, 400, 'About', optionStyle);
 
             startOption.inputEnabled = true;
             startOption.events.onInputUp.add(function () {
+                game.state.start('Premise');
+            });
+
+            aboutOption.inputEnabled = true;
+            aboutOption.events.onInputUp.add(function () {
                 game.state.start('About');
             });
+
             if (!window.theme.isPlaying) {
                 window.theme.play();
             }
@@ -399,6 +410,10 @@ var _aboutState = __webpack_require__(/*! ./about-state */ "./src/about-state.js
 
 var _aboutState2 = _interopRequireDefault(_aboutState);
 
+var _premiseState = __webpack_require__(/*! ./premise-state */ "./src/premise-state.js");
+
+var _premiseState2 = _interopRequireDefault(_premiseState);
+
 var _gameOverState = __webpack_require__(/*! ./game-over-state */ "./src/game-over-state.js");
 
 var _gameOverState2 = _interopRequireDefault(_gameOverState);
@@ -417,12 +432,13 @@ var _prisonersInstructionsState2 = _interopRequireDefault(_prisonersInstructions
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// initialize the play state in entry state to reset all the variables in play state
-var game = new Phaser.Game(960, 540, Phaser.AUTO, 'game', undefined, undefined, false);
+var game = new Phaser.Game(960, 540, Phaser.AUTO, 'game', undefined, undefined, false); // initialize the play state in entry state to reset all the variables in play state
+
 game.state.add('FontLoad', (0, _fontLoadState2.default)(game));
 game.state.add('AssetLoad', (0, _assetLoadState2.default)(game));
 game.state.add('Entry', (0, _entryState2.default)(game));
 game.state.add('About', (0, _aboutState2.default)(game));
+game.state.add('Premise', (0, _premiseState2.default)(game));
 game.state.add('GameOver', (0, _gameOverState2.default)(game));
 game.state.add('Instructions', (0, _instructionsState2.default)(game));
 game.state.add('Prisoners', (0, _prisonersInstructionsState2.default)(game));
@@ -1374,6 +1390,57 @@ function playState(game) {
 
     return { preload: preload, create: create, update: update, render: render };
 }
+
+/***/ }),
+
+/***/ "./src/premise-state.js":
+/*!******************************!*\
+  !*** ./src/premise-state.js ***!
+  \******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.default = premiseState;
+
+var _entryState = __webpack_require__(/*! ./entry-state */ "./src/entry-state.js");
+
+var _entryState2 = _interopRequireDefault(_entryState);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function premiseState(game) {
+
+    var textCrawlStyle = { font: '10pt Press Start 2P', fill: 'white', align: 'left', wordWrap: true, wordWrapWidth: game.width - 60 };
+    var textCrawl = 'Premise\n\n' + 'The Kingdom of Fecea is asphyxiating from the nauseating fumes of crime, bankruptcy, and moral degeneracy.\n' + 'Brigands, highway robbers, and non-humans frustrate the attempts of the Kingdom\'s law enforcement to maintain order.\n\n' + 'In the bowels of the Kingdom\'s most infamous gaol, you are Thelonious, the lone executioner.\n\n' + 'Your goal: prevent the prison from overflowing, while remaining carefully within the law (which permits spontaneous executions).';
+
+    return {
+        create: function create() {
+            var buttonStyle = { font: '10pt Press Start 2P', fill: '#FFFFFF', align: 'left' };
+            var backButton = game.add.text(60, 30, '< Back', buttonStyle);
+
+            var instructionsButtonStyle = { font: '10pt Press Start 2P', fill: '#FFFFFF', align: 'right' };
+            var instructionsButton = game.add.text(game.world.width - 240, 30, 'Instructions >', instructionsButtonStyle);
+
+            backButton.inputEnabled = true;
+            backButton.events.onInputUp.add(function () {
+                game.state.start('Entry');
+            });
+
+            instructionsButton.inputEnabled = true;
+            instructionsButton.events.onInputUp.add(function () {
+                game.state.start('Instructions');
+            });
+
+            var aboutText = game.add.text(60, 90, textCrawl, textCrawlStyle);
+        }
+    };
+};
 
 /***/ }),
 

@@ -15,11 +15,18 @@ export default function entryState(game) {
 
             var optionStyle = { font: '30pt Press Start 2P', fill: 'white', align: 'left' };
             var startOption = game.add.text(30, 280, 'Start', optionStyle);
+            var aboutOption = game.add.text(30, 400, 'About', optionStyle);
 
             startOption.inputEnabled = true;
             startOption.events.onInputUp.add(function () {
+                game.state.start('Premise');
+            });
+
+            aboutOption.inputEnabled = true;
+            aboutOption.events.onInputUp.add(function() {
                 game.state.start('About');
             });
+
             if(!window.theme.isPlaying) {
                 window.theme.play();
             }
